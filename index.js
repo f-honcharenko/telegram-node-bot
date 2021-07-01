@@ -5,12 +5,13 @@ const {
     GOOGLE_CLOUD_PROJECT_ID,
     GOOGLE_CLOUD_REGION
 } = process.env;
-console.log("================");
-console.log(process.env);
-console.log("================");
 const TOKEN = "1873305865:AAHuGAc_kGzXt0KIdKSPddOdWS2qyxdfk4A"
+console.log(process.env.GOOGLE_CLOUD_REGION);
+console.log(process.env.GOOGLE_CLOUD_PROJECT_ID);
+console.log(process.env.FUNCTION_TARGET);
+https: //us-central1-node-telegram-bot-318510.cloudfunctions.net/
 
-const bot = new Telegraf(TOKEN);
+    const bot = new Telegraf(TOKEN);
 bot.start((ctx) => ctx.reply(`Welcome to the most silly bot you'll ever see`));
 bot.help((ctx) => ctx.reply(`Write anything to me and I'll repeat it :)`));
 bot.on('text', (ctx) => ctx.reply(ctx.message.text)); //listen to every text message
