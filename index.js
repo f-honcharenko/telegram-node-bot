@@ -1,3 +1,8 @@
+console.log(process.env.GOOGLE_CLOUD_REGION);
+console.log(process.env.GOOGLE_CLOUD_PROJECT_ID);
+console.log(process.env.FUNCTION_TARGET);
+
+
 const {
     Telegraf
 } = require('telegraf')
