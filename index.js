@@ -1,4 +1,6 @@
-const Telegraf = require('telegraf');
+const {
+    Telegraf
+} = require('telegraf')
 const {
     GOOGLE_CLOUD_PROJECT_ID,
     TELEGRAM_BOT_TOKEN,
