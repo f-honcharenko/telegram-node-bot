@@ -1,1 +1,1 @@
-console.log("Test case: #1");
+console.log("Test case: #2");
