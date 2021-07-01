@@ -1,0 +1,19 @@
+{
+  "name": "telegram-node-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/f-honcharenko/telegram-node-bot.git"
+  },
+  "author": "Honcharenko F.",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/f-honcharenko/telegram-node-bot/issues"
+  },
+  "homepage": "https://github.com/f-honcharenko/telegram-node-bot#readme"
+}
