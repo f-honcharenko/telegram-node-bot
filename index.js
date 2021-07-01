@@ -3,11 +3,12 @@ const {
 } = require('telegraf')
 const {
     GOOGLE_CLOUD_PROJECT_ID,
-    TELEGRAM_BOT_TOKEN,
     GOOGLE_CLOUD_REGION
 } = process.env;
 
-const bot = new Telegraf(TELEGRAM_BOT_TOKEN);
+const TOKEN = "1873305865:AAHuGAc_kGzXt0KIdKSPddOdWS2qyxdfk4A"
+
+const bot = new Telegraf(TOKEN);
 bot.start((ctx) => ctx.reply(`Welcome to the most silly bot you'll ever see`));
 bot.help((ctx) => ctx.reply(`Write anything to me and I'll repeat it :)`));
 bot.on('text', (ctx) => ctx.reply(ctx.message.text)); //listen to every text message
@@ -20,4 +21,4 @@ exports.telegramBotWebhook = (req, res) => {
     bot.handleUpdate(req.body, res);
 };
 
-// console.log("Test case: #5");
+console.log("Test case: #7");
