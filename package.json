@@ -18,6 +18,8 @@
   },
   "homepage": "https://github.com/f-honcharenko/telegram-node-bot#readme",
   "dependencies": {
+    "index.js": "^0.0.3",
+    "node": "^16.4.0",
     "node-telegram-bot": "^0.1.9",
     "node-telegram-bot-api": "^0.53.0",
     "nodemon": "^2.0.9"
