@@ -5,7 +5,9 @@ const {
     GOOGLE_CLOUD_PROJECT_ID,
     GOOGLE_CLOUD_REGION
 } = process.env;
-
+console.log("================");
+console.log(process.env);
+console.log("================");
 const TOKEN = "1873305865:AAHuGAc_kGzXt0KIdKSPddOdWS2qyxdfk4A"
 
 const bot = new Telegraf(TOKEN);
