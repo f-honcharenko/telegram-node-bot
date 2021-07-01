@@ -8,7 +8,8 @@ const {
 } = require('telegraf')
 
 const TOKEN = "1873305865:AAHuGAc_kGzXt0KIdKSPddOdWS2qyxdfk4A"
-
+const GOOGLE_CLOUD_REGION = process.env.GOOGLE_CLOUD_REGION || "europe-west1";
+const GOOGLE_CLOUD_PROJECT_ID = process.env.GOOGLE_CLOUD_PROJECT_ID || "node-telegram-bot-318510";
 
 const bot = new Telegraf(TOKEN);
 bot.start((ctx) => ctx.reply(`Welcome to the most silly bot you'll ever see`));
