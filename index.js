@@ -9,6 +9,13 @@ const app = express()
 const bot = new Telegraf(config.get("token"));
 const port = process.env.PORT || config.get("port");
 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+    extended: false
+}));
+
+
+
 app.get('/', (req, res) => {
     res.send('Hello World!')
 })
