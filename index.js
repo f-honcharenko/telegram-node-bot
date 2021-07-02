@@ -15,26 +15,27 @@ app.use(bodyParser.urlencoded({
 }));
 
 
-
-app.get('/', (req, res) => {
-    res.send('Hello World!')
-})
-app.post('/webhook', (req, res) => {
-    res.status(200);
-    console.log("POST [" + req.ip + "]");
-    console.log(req.body);
-
-})
-app.listen(port, () => {
-    console.log(`Example app listening at http://localhost:${port}`)
-})
-
 bot.start((ctx) => ctx.reply(`Welcome to the most silly bot you'll ever see`));
 bot.help((ctx) => ctx.reply(`Write anything to me and I'll repeat it :)`));
 bot.on('text', (ctx) => ctx.reply(ctx.message.text)); //listen to every text message
 
 bot.on('message', ctx => ctx.reply('Command not recognized')); //avoid timeouts with unsupported commands
 bot.telegram.setWebhook(config.get("webhook-link"));
+
+app.get('/', (req, res) => {
+    res.send('Hello World!')
+})
+app.post('/webhook', (req, res) => {
+    // res.status(200);
+    console.log("POST [" + req.ip + "]");
+    bot.handleUpdate(req.body, res);
+
+})
+app.listen(port, () => {
+    console.log(`Example app listening at http://localhost:${port}`)
+})
+
+
 
 exports.telegramBotWebhook = (req, res) => {
     bot.handleUpdate(req.body, res);
