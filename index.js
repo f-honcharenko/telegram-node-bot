@@ -36,8 +36,8 @@ app.get('/', (req, res) => {
     res.send('Hello World!')
 })
 app.post('/webhook', (req, res) => {
-    res.send('Hello World!')
-    console.log(req);
+    res.send('post')
+    console.log("POST [" + req.ip + "]");
 })
 
 app.listen(port, () => {
