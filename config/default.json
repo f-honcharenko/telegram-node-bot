@@ -1,0 +1,9 @@
+{
+    "token":"1873305865:AAHuGAc_kGzXt0KIdKSPddOdWS2qyxdfk4A",
+    "port":"8080",
+    "webhook-link":"https://github-integration4-iwexs6eomq-uc.a.run.app/webhook",
+    "GOOGLE_CLOUD_REGION":"europe-west1",
+    "GOOGLE_CLOUD_PROJECT_ID":"node-telegram-bot-318510",
+    "GOOGLE_CLOUD_REGION":""
+
+}
