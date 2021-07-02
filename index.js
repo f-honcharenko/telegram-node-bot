@@ -3,7 +3,7 @@ const {
 } = require('telegraf')
 const config = require('config');
 const express = require('express')
-
+const bodyParser = require('body-parser')
 
 const app = express()
 const bot = new Telegraf(config.get("token"));
@@ -13,8 +13,10 @@ app.get('/', (req, res) => {
     res.send('Hello World!')
 })
 app.post('/webhook', (req, res) => {
-    res.send('post')
+    res.status(200);
     console.log("POST [" + req.ip + "]");
+    console.log(req.body);
+
 })
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`)
