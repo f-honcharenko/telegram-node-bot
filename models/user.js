@@ -13,6 +13,10 @@ const userSchema = new Schema({
     type: {
         type: String,
         required: true,
+    },
+    orders: {
+        type: [String],
+        required: false,
     }
 }, {
     collection: 'users'

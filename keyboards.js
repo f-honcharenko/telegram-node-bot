@@ -28,6 +28,21 @@ class keyboards {
             Markup.button.callback("Назад"),
         ]
     ]);
+    static adminForm = Markup.keyboard([
+        [
+            Markup.button.callback("Рейтинг бухгалтеров"),
+            Markup.button.callback(""),
+        ]
+    ]);
+    static scenes = Markup.keyboard([
+        [
+            Markup.button.callback("startUserScene"),
+            Markup.button.callback("startAdminScene"),
+            Markup.button.callback("myFromsScene"),
+            Markup.button.callback("createFormScene"),
+        ]
+    ]);
+    static remove = Markup.removeKeyboard();
 }
 
 module.exports = keyboards;

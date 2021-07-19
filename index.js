@@ -14,21 +14,94 @@ const mongoose = require('mongoose');
 
 //MODELS
 const scenesGen = require('./scenes');
+const invoices = require('./invoices');
+const user = require('./models/user');
+const keyboards = require('./keyboards');
 
 //CONSTS
-const stage = new Scenes.Stage([scenesGen.startScene(), scenesGen.myFromsScene(), scenesGen.createFormScene()])
+const stage = new Scenes.Stage([scenesGen.startUserScene(), scenesGen.myFromsScene(), scenesGen.createFormScene(), scenesGen.startAdminScene()])
 const bot = new Telegraf(config.get("token"));
 const port = process.env.PORT || config.get("port");
 const app = express();
 
-
 bot.use(session());
 bot.use(stage.middleware());
+bot.hears('pay', (ctx) => { // это обработчик конкретного текста, данном случае это - "pay"
+    return ctx.replyWithInvoice(invoices.getDocumentInvoice(ctx.from.id)) //  метод replyWithInvoice для выставления счета  
+})
 
-bot.start((ctx) =>
-    ctx.scene.enter('startScene')
-);
-bot.help((ctx) => ctx.reply(`Write anything to me and I'll repeat it :)`));
+bot.on('pre_checkout_query', (ctx) => ctx.answerPreCheckoutQuery(true)) // ответ на предварительный запрос по оплате
+
+bot.on('successful_payment', async (ctx, next) => { // ответ в случае положительной оплаты
+    await ctx.reply('SuccessfulPayment')
+})
+bot.start(async (ctx) => {
+    let userID = ctx.message.from.id;
+    let userType = '';
+    await user.findOne({
+        "telegramID": userID
+    }, {}, (err, res) => {
+        if (err) return console.log("test");
+        if (res) {
+            userType = res.type;
+        } else {
+            console.log("res not found");
+            userType = user;
+            let candidate = new user({
+                "telegramID": ctx.message.from.id,
+                "type": userType
+            });
+            candidate.save(async (err, res) => {
+                if (err) return console.log(err);
+                ctx.reply("Создана новая запись в БД");
+            });
+        }
+        ctx.reply("[Отладка] ID: " + userID + "\n[Отладка] type: " + userType);
+        switch (userType) {
+            case "user":
+                ctx.reply("Тип учетной записи: USER");
+                ctx.scene.enter("startUserScene");
+                break;
+            case "admin":
+                ctx.reply("Тип учетной записи: ADMIN");
+                ctx.scene.enter("startAdminScene");
+                break;
+            case "worker":
+                ctx.reply("Тип учетной записи: WORKER");
+                // ctx.scene.enter("startAdminScene");
+                break;
+            case "moder":
+                ctx.reply("Тип учетной записи: MODER");
+                // ctx.scene.enter("startAdminScene");
+                break;
+        }
+        return null;
+    });
+});
+bot.on("message", (ctx) => {
+    console.log(ctx.message.chat);
+    if (ctx.update.message.chat.type == "group") {
+        return ctx.telegram.sendMessage(ctx.message.chat.id, "Бот находяиться в групповом чате, управление не доступно", keyboards.remove);
+    } else {
+        switch (ctx.message.text) {
+            case "startUserScene":
+                return ctx.scene.enter("startUserScene");
+                break;
+            case "startAdminScene":
+                return ctx.scene.enter("startAdminScene");
+                break;
+            case "myFromsScene":
+                return ctx.scene.enter("myFromsScene");
+                break;
+            case "createFormScene":
+                return ctx.scene.enter("createFormScene");
+                break;
+            default:
+                ctx.reply(`Похоже, вы находитесь вне сцен, пожалуйста, выберите одну из перечисленных в меню.`, keyboards.scenes);
+                break;
+        }
+    }
+});
 bot.telegram.setWebhook(config.get("webhook-link"));
 bot.launch();
 
