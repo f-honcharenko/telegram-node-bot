@@ -1,8 +1,6 @@
 {
-    "token":"1873305865:AAH3GbbelwIts7HVjTYuVHeIH00OYf0Dp0I",
+    "token":"1873305865:AAF1O0aOV19fjC0BQ7xHrQgZ-j3IycY3AnY",
     "port":"8080",
     "webhook-link":"https://github-integration4-iwexs6eomq-uc.a.run.app/webhook",
-    "GOOGLE_CLOUD_REGION":"europe-west1",
-    "GOOGLE_CLOUD_PROJECT_ID":"node-telegram-bot-318510"
-
+    "mongo-link":"mongodb+srv://admin:admin@cluster0.albqm.mongodb.net/nodeTelegramBot?retryWrites=true&w=majority"
 }

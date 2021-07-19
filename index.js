@@ -10,13 +10,17 @@ const {
 const config = require('config');
 const express = require('express');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+
+//MODELS
 const scenesGen = require('./scenes');
 
-const myForms = scenesGen.myFromsScene();
+//CONSTS
 const stage = new Scenes.Stage([scenesGen.startScene(), scenesGen.myFromsScene(), scenesGen.createFormScene()])
 const bot = new Telegraf(config.get("token"));
 const port = process.env.PORT || config.get("port");
 const app = express();
+
 
 bot.use(session());
 bot.use(stage.middleware());
@@ -39,4 +43,10 @@ app.post('/webhook', (req, res) => {
 
 app.listen(port, () => {
     console.log(`Example app listening at port: ${port}`)
+    mongoose.connect(config.get("mongo-link"), {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        useCreateIndex: true,
+        useFindAndModify: false
+    });
 })

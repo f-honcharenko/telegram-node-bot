@@ -2,14 +2,44 @@ const {
     Scenes,
     Markup
 } = require('telegraf');
+const mongoose = require('mongoose');
+
 const keyboards = require('./keyboards');
+const user = require('./models/user');
 
 class scenesGen {
     static startScene() {
         const startScene = new Scenes.BaseScene('startScene');
 
+        // let candidate = new user({
+        //     "telegramID": "test",
+        //     "type": "user"
+        // });
+
+        // candidate.save();
+
         startScene.enter(async (ctx) => {
-            await ctx.reply("Смена сцены", keyboards.start);
+            let userID = ctx.message.from.id;
+            let userType = '';
+            await user.findOne({
+                "telegramID": userID
+            }, {}, (err, res) => {
+                if (err) return console.log("test");
+                if (res) {
+                    userType = res.type;
+                    return ctx.reply("Смена сцены\n[Отладка] ID: " + userID + "\n[Отладка] type: " + userType, keyboards.start);
+                } else {
+                    console.log("res not found");
+                    let candidate = new user({
+                        "telegramID": ctx.message.from.id,
+                        "type": "user"
+                    });
+                    candidate.save(async (err, res) => {
+                        if (err) return console.log(err);
+                        return ctx.reply("Смена сцены\n[Отладка] ID: " + userID + "\n[Отладка] Пользователь не найден в БД, и запись была создана по умолчанию [" + userType + "]", keyboards.start);
+                    });
+                }
+            });
         })
 
         startScene.on('message', async (ctx) => {
@@ -40,7 +70,6 @@ class scenesGen {
         })
         return myFromsScene;
     }
-
     static createFormScene() {
         const createFormScene = new Scenes.BaseScene('createFormScene');
 
