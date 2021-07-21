@@ -11,7 +11,6 @@ const config = require('config');
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-
 //MODELS
 const scenesGen = require('./scenes');
 const invoices = require('./invoices');
@@ -19,7 +18,7 @@ const user = require('./models/user');
 const keyboards = require('./keyboards');
 
 //CONSTS
-const stage = new Scenes.Stage([scenesGen.startUserScene(), scenesGen.myFromsScene(), scenesGen.createFormScene(), scenesGen.startAdminScene()])
+const stage = new Scenes.Stage([scenesGen.startUserScene(), scenesGen.myFromsScene(), scenesGen.groupScene(), scenesGen.createFormScene(), scenesGen.startAdminScene()])
 const bot = new Telegraf(config.get("token"));
 const port = process.env.PORT || config.get("port");
 const app = express();
@@ -41,18 +40,18 @@ bot.start(async (ctx) => {
     await user.findOne({
         "telegramID": userID
     }, {}, (err, res) => {
-        if (err) return console.log("test");
+        if (err) return ctx.reply(err);
         if (res) {
             userType = res.type;
         } else {
-            console.log("res not found");
+            // console.log("res not found");
             userType = user;
             let candidate = new user({
                 "telegramID": ctx.message.from.id,
                 "type": userType
             });
-            candidate.save(async (err, res) => {
-                if (err) return console.log(err);
+            candidate.save(async (errS, resS) => {
+                if (errS) return tx.reply(errS);
                 ctx.reply("Создана новая запись в БД");
             });
         }
@@ -78,10 +77,15 @@ bot.start(async (ctx) => {
         return null;
     });
 });
+bot.hears('/getOrder_*/', async (ctx) => {
+    // ctx.reply(JSON.stringify(ctx.update));
+    console.log(ctx);
+});
 bot.on("message", (ctx) => {
-    console.log(ctx.message.chat);
+    console.log(new Date(new Date().setHours(new Date().getHours() + 3)));
     if (ctx.update.message.chat.type == "group") {
-        return ctx.telegram.sendMessage(ctx.message.chat.id, "Бот находяиться в групповом чате, управление не доступно", keyboards.remove);
+        ctx.telegram.sendMessage(ctx.message.chat.id, "Бот находяиться в групповом чате, управление не доступно", keyboards.remove);
+        return ctx.scene.enter('groupScene');
     } else {
         switch (ctx.message.text) {
             case "startUserScene":
@@ -94,6 +98,7 @@ bot.on("message", (ctx) => {
                 return ctx.scene.enter("myFromsScene");
                 break;
             case "createFormScene":
+                // console.log(ctx.message);
                 return ctx.scene.enter("createFormScene");
                 break;
             default:

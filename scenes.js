@@ -1,14 +1,18 @@
 const {
     Scenes,
     Markup,
-    Router
+    Router,
+    Extra
 } = require('telegraf');
 const mongoose = require('mongoose');
+// const extra = require('telegraf/extra')
 
 const keyboards = require('./keyboards');
 const user = require('./models/user');
+const order = require('./models/order');
 const invoices = require('./invoices');
 const groupList = ["-597398345"];
+// console.log(Markdown);
 
 class scenesGen {
     static startUserScene() {
@@ -43,7 +47,7 @@ class scenesGen {
                 }, (err, res) => {
                     if (err) ctx.reply("ERROR\n" + err);
                     if (res.length != 0) {
-                        console.log("moder list", res);
+                        // console.log("moder list", res);
                         let responce = '';
                         let buttonsArray = [];
 
@@ -56,9 +60,9 @@ class scenesGen {
                             // });
                         });
                         let inlineMessageRatingKeyboard = Markup.inlineKeyboard(buttonsArray);
-                        return ctx.reply('Список бухгалетров:\n', inlineMessageRatingKeyboard);
+                        return ctx.reply('Список бухгалетров(type= moder):\n', inlineMessageRatingKeyboard);
                     } else {
-                        return ctx.reply("Список бухгалетров буст.");
+                        return ctx.reply("Список бухгалетров(type= moder) буст.");
                     };
                 });
             } else {
@@ -73,23 +77,27 @@ class scenesGen {
         myFromsScene.enter(async (ctx) => {
             await ctx.reply("Смена сцены", keyboards.myForms);
         })
+
         myFromsScene.on('message', async (ctx) => {
             if (ctx.message.text == "Показать формы") {
-                user.findOne({
-                    telegramID: ctx.message.from.id
+                order.find({
+                    creatorTelegramID: ctx.message.from.id
                 }, (err, res) => {
                     if (err) ctx.reply("ERROR\n" + err);
                     if (res.length != 0) {
                         let responce = '';
-                        res.orders.forEach((el) => {
-                            responce += el + '\n';
+                        let index = 1;
+                        res.forEach((el) => {
+                            responce += `<b>⬛⬛⬛${index}⬛⬛⬛</b>\nУслуга: ${el.title}\nДата: ${new Date(el.creationDate).toJSON().slice(0,19).replace('T',' ').replace('-', '.').replace('-', '.')}\n\n`;
+                            index++;
                         });
-                        return ctx.reply('Список ваших заказов (' + res.orders.length + '):\n' + responce);
+                        return ctx.reply('Список ваших заказов (' + res.length + '):\n' + responce, {
+                            parse_mode: 'html'
+                        });
                     } else {
                         return ctx.reply("Список ваших заказов буст.");
                     };
                 });
-                // await ctx.reply("[Заменить это сообщение на список форм.]");
             } else if (ctx.message.text == "Назад") {
                 await ctx.scene.enter('startUserScene');
             } else {
@@ -106,39 +114,38 @@ class scenesGen {
         })
         createFormScene.on('successful_payment', async (ctx, next) => { // ответ в случае положительной оплаты
             const userID = ctx.message.from.id;
-            user.updateOne({
-                "telegramID": userID
-            }, {
-                $addToSet: {
-                    orders: Number(new Date())
+            const orderName = '[Заплатка. Заменить на название услуги]';
+            const orderDate = new Date(new Date().setHours(new Date().getHours() + 3)).toJSON();
+            let orderCandidate = new order({
+                "creatorTelegramID": userID,
+                "title": orderName,
+                "creationDate": orderDate,
+            });
+            orderCandidate.save((errS, resS) => {
+                if (errS) return ctx.reply("Ошибка при сохранении платежа!");
+                if (resS) {
+                    console.log(resS._id);
+                    groupList.forEach((el) => {
+                        ctx.telegram.sendMessage(el,
+                            `Новый заказ!\n<b>Услуга:</b> ${orderName} \n<b>Дата:</b> ${orderDate.slice(0,19).replace('T',' ').replace('-', '.').replace('-', '.')}\n<b>Оплачено:</b> ${(ctx.update.message.successful_payment.total_amount / 100) + ctx.update.message.successful_payment.currency}\n<b>Пользователь:</b> <a href="tg://user?id=${userID}">Profile link</a>\n`, {
+                                parse_mode: 'HTML',
+                                data: '123',
+                                reply_markup: {
+                                    inline_keyboard: [
+                                        [{
+                                            text: "Берусь!",
+                                            callback_data: "getOrder",
+                                            data: resS._id
+                                        }]
+                                    ]
+                                }
+                            });
+
+                    });
                 }
-            }, (resUo, errUo) => {
-                // console.log(errUo);
-                console.log(resUo);
-                // if (errUo) return ctx.reply("Ошибка при сохранении платежа, обратитесть к администрации сервсиа");
-            });
-            // user.findOne({
-            //     "telegramID": userID
-            // }, (err, res) => {
-            //     if (err) return ctx.reply("Ошибка при сохранении платежа, обратитесть к администрации сервсиа");
-            //     if (res.length != 0) {
-            //         // console.log(res.type);
-            //         res.type = "LOL";
-            //         console.log(res);
-            //         res.updateOne({
-            //             "telegramID": userID
-            //         }, res, (errU, resU) => {
-            //             console.log(errU, resU);
-            //             // if (errU) return ctx.reply("Ошибка при сохранении платежа, обратитесть к администрации сервсиа");
-            //             // if (resU) return ctx.reply("Ошибка при сохранении платежа, обратитесть к администрации сервсиа");
-            //         })
-            //     } else {
-            //         return ctx.reply("Ваш профиль не найден в БД, обратиетсть к администрации");
-            //     }
-            // });
-            groupList.forEach((el) => {
-                ctx.telegram.sendMessage(el, "Произведена оплата \n[" + (ctx.update.message.successful_payment.total_amount / 100) + ctx.update.message.successful_payment.currency + ']');
-            });
+            })
+
+            // console.log(ctx.update.message.successful_payment);
             await ctx.reply('Оплата прошла успешно. Ваши данные переданы соответсвующим сотрудникам.')
         })
         createFormScene.on('message', async (ctx) => {
@@ -169,6 +176,20 @@ class scenesGen {
             }
         })
         return createFormScene;
+    }
+    static groupScene() {
+        const groupScene = new Scenes.BaseScene('groupScene');
+
+        groupScene.enter(async (ctx) => {
+            await ctx.reply("Помещение в групповую сцену!", keyboards.remove);
+        })
+        groupScene.action('getOrder', async (ctx) => {
+            console.log(JSON.stringify(ctx.update));
+        });
+        groupScene.on('message', async (ctx) => {
+            ctx.reply('msg');
+        });
+        return groupScene;
     }
 }
 

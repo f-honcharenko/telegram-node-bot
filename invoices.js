@@ -57,8 +57,14 @@ class invoices {
             photo_width: 250, // Ширина фото
             photo_height: 250, // Длина фото
             payload: { // Полезные данные счета-фактуры, определенные ботом, 1–128 байт. Это не будет отображаться пользователю, используйте его для своих внутренних процессов.
-                unique_id: `${id}_${Number(new Date())}`,
-                provider_token: "410694247:TEST:7808b6e2-2083-405a-b6c5-272bcab6da29",
+                // server_data: {
+                // unique_id: `${id}_${Number(new Date())}`,
+                // provider_token: "410694247:TEST:7808b6e2-2083-405a-b6c5-272bcab6da29",
+                // },
+                // service_data: {
+                service_name: "Составление пакета документов по ВЄД",
+                // }
+                // service_name2: "Составление пакета документов по ВЄД",
             }
         }
 
