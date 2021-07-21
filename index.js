@@ -45,7 +45,7 @@ bot.start(async (ctx) => {
             userType = res.type;
         } else {
             // console.log("res not found");
-            userType = user;
+            userType = "user";
             let candidate = new user({
                 "telegramID": ctx.message.from.id,
                 "type": userType
