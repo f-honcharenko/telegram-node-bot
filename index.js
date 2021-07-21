@@ -19,7 +19,7 @@ const keyboards = require('./keyboards');
 
 //CONSTS
 const stage = new Scenes.Stage([scenesGen.startUserScene(), scenesGen.myFromsScene(), scenesGen.groupScene(), scenesGen.createFormScene(), scenesGen.startAdminScene()])
-const bot = new Telegraf(config.get("token"));
+// const bot = new Telegraf(config.get("token"));
 const port = process.env.PORT || config.get("port");
 const app = express();
 
