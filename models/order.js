@@ -19,6 +19,12 @@ const order = new Schema({
         type: Date,
         required: true,
         unique: false
+    },
+    worker: {
+        type: String,
+        required: false,
+        unique: false,
+        default: null
     }
     // creationDate: {
     //     type: Date,

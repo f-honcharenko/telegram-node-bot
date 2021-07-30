@@ -44,8 +44,7 @@ bot.start(async (ctx) => {
         if (res) {
             userType = res.type;
         } else {
-            // console.log("res not found");
-            userType = user;
+            userType = 'user';
             let candidate = new user({
                 "telegramID": ctx.message.from.id,
                 "type": userType
@@ -82,9 +81,11 @@ bot.hears('/getOrder_*/', async (ctx) => {
     console.log(ctx);
 });
 bot.on("message", (ctx) => {
-    console.log(new Date(new Date().setHours(new Date().getHours() + 3)));
-    if (ctx.update.message.chat.type == "group") {
-        ctx.telegram.sendMessage(ctx.message.chat.id, "Бот находяиться в групповом чате, управление не доступно", keyboards.remove);
+    // console.log((ctx.update.message.chat.type == "group") || (ctx.update.message.chat.type == "supergroup"));
+    if ((ctx.update.message.chat.type == "group") || (ctx.update.message.chat.type == "supergroup")) {
+        console.log(ctx.message);
+        console.log();
+        // ctx.telegram.sendMessage(ctx.message.chat.id, "Бот находяиться в групповом чате, управление не доступно", keyboards.remove);
         return ctx.scene.enter('groupScene');
     } else {
         switch (ctx.message.text) {
@@ -107,7 +108,7 @@ bot.on("message", (ctx) => {
         }
     }
 });
-bot.telegram.setWebhook(config.get("webhook-link"));
+// bot.telegram.setWebhook(config.get("webhook-link"));
 bot.launch();
 
 app.use(bodyParser.json());

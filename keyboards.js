@@ -38,7 +38,7 @@ class keyboards {
     static scenes = Markup.keyboard([
         [
             Markup.button.callback("startUserScene"),
-            Markup.button.callback("startAdminScene"),
+            // Markup.button.callback("startAdminScene"),
             Markup.button.callback("myFromsScene"),
             Markup.button.callback("createFormScene"),
         ]

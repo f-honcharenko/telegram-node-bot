@@ -11,7 +11,7 @@ const keyboards = require('./keyboards');
 const user = require('./models/user');
 const order = require('./models/order');
 const invoices = require('./invoices');
-const groupList = ["-597398345"];
+const groupList = ["-1001519010099"];
 // console.log(Markdown);
 
 class scenesGen {
@@ -88,7 +88,7 @@ class scenesGen {
                         let responce = '';
                         let index = 1;
                         res.forEach((el) => {
-                            responce += `<b>⬛⬛⬛${index}⬛⬛⬛</b>\nУслуга: ${el.title}\nДата: ${new Date(el.creationDate).toJSON().slice(0,19).replace('T',' ').replace('-', '.').replace('-', '.')}\n\n`;
+                            responce += `<b>⬛⬛⬛${index}⬛⬛⬛</b>\nУслуга: ${el.title}\nДата: ${new Date(el.creationDate).toJSON().slice(0,19).replace('T',' ').replace('-', '.').replace('-', '.')}\nИсполнитель: ${el.worker==null?'Ожидается\n\n':'Найден\n\n'}`;
                             index++;
                         });
                         return ctx.reply('Список ваших заказов (' + res.length + '):\n' + responce, {
@@ -120,22 +120,25 @@ class scenesGen {
                 "creatorTelegramID": userID,
                 "title": orderName,
                 "creationDate": orderDate,
+                "creationDate": orderDate,
             });
             orderCandidate.save((errS, resS) => {
-                if (errS) return ctx.reply("Ошибка при сохранении платежа!");
+                if (errS) {
+                    console.log(errS);
+                    return ctx.reply("Ошибка при сохранении платежа!");
+                }
                 if (resS) {
                     console.log(resS._id);
                     groupList.forEach((el) => {
                         ctx.telegram.sendMessage(el,
-                            `Новый заказ!\n<b>Услуга:</b> ${orderName} \n<b>Дата:</b> ${orderDate.slice(0,19).replace('T',' ').replace('-', '.').replace('-', '.')}\n<b>Оплачено:</b> ${(ctx.update.message.successful_payment.total_amount / 100) + ctx.update.message.successful_payment.currency}\n<b>Пользователь:</b> <a href="tg://user?id=${userID}">Profile link</a>\n`, {
+                            `Новый заказ!\n<b>Услуга:</b> ${orderName} \n<b>Дата:</b> ${orderDate.slice(0,19).replace('T',' ').replace('-', '.').replace('-', '.')}\n<b>Оплачено:</b> ${(ctx.update.message.successful_payment.total_amount / 100) + ctx.update.message.successful_payment.currency}\n<b>Пользователь: </b> <a href="tg://user?id=${userID}">${ctx.message.from.first_name+' '+ctx.message.from.last_name}</a>\n<b>Исполнитель: </b> <a href="tg://user?id=0">Ожидается</a>`, {
                                 parse_mode: 'HTML',
                                 data: '123',
                                 reply_markup: {
                                     inline_keyboard: [
                                         [{
                                             text: "Берусь!",
-                                            callback_data: "getOrder",
-                                            data: resS._id
+                                            callback_data: "getOrder_" + resS._id
                                         }]
                                     ]
                                 }
@@ -183,8 +186,57 @@ class scenesGen {
         groupScene.enter(async (ctx) => {
             await ctx.reply("Помещение в групповую сцену!", keyboards.remove);
         })
-        groupScene.action('getOrder', async (ctx) => {
-            console.log(JSON.stringify(ctx.update));
+        groupScene.action(/getOrder/, async (ctx) => {
+            // console.log(JSON.stringify(ctx.update));
+            let mongoID = ctx.update.callback_query.data.slice(9);
+            let msgID = ctx.update.callback_query.message.message_id;
+            let chatID = ctx.update.callback_query.message.chat.id;
+            let workerOBJ = ctx.update.callback_query.from;
+            let text = ctx.update.callback_query.message.text;
+            console.log(mongoID, '\n', msgID, '\n', chatID, '\n');
+            // console.log(ctx.update.callback_query.message.entities);
+            order.findOne({
+                _id: mongoID
+            }, (err, res) => {
+                if (err) {
+                    console.log(err);
+                    return ctx.reply("Ошибка. Заказ не найдена.");
+                }
+                if (res) {
+                    if (res.worker == null) {
+                        order.updateOne({
+                            _id: mongoID
+                        }, {
+                            worker: workerOBJ.id
+                        }, (errU, resU) => {
+                            if (errU) {
+                                console.log(errU);
+                                return ctx.reply('Ошибка обновления заказа.');
+                            }
+                            if (resU) {
+                                let entities = ctx.update.callback_query.message.entities;
+                                for (let i = 0; i < entities.length; i++) {
+                                    // console.log('[ELEMENT ENTIT]: ', ctx.update.callback_query.message.entities[i]);
+                                    if (entities[i].type == "text_link") {
+                                        // delete entities[i].url;
+                                        entities[i].type = 'text_mention';
+                                        entities[i].user = workerOBJ;
+                                        entities[i].length = 1 + workerOBJ.first_name.length + workerOBJ.last_name.length;
+                                    }
+                                }
+                                console.log(entities);
+                                ctx.telegram.editMessageText(chatID, msgID, null, text.replace('Ожидается', workerOBJ.first_name + ' ' + workerOBJ.last_name), {
+                                    entities: entities
+                                });
+                            }
+                            // {
+                            //     parse_mode: 'HTML'
+                            // }
+                        })
+                    }
+                }
+            });
+
         });
         groupScene.on('message', async (ctx) => {
             ctx.reply('msg');
