@@ -15,6 +15,7 @@ const mongoose = require('mongoose');
 const scenesGen = require('./scenes');
 const invoices = require('./invoices');
 const user = require('./models/user');
+const order = require('./models/order');
 const keyboards = require('./keyboards');
 
 //CONSTS
@@ -25,9 +26,6 @@ const app = express();
 
 bot.use(session());
 bot.use(stage.middleware());
-bot.hears('pay', (ctx) => { // это обработчик конкретного текста, данном случае это - "pay"
-    return ctx.replyWithInvoice(invoices.getDocumentInvoice(ctx.from.id)) //  метод replyWithInvoice для выставления счета  
-})
 
 bot.on('pre_checkout_query', (ctx) => ctx.answerPreCheckoutQuery(true)) // ответ на предварительный запрос по оплате
 
@@ -35,7 +33,11 @@ bot.on('successful_payment', async (ctx, next) => { // ответ в случа�
     await ctx.reply('SuccessfulPayment')
 })
 bot.start(async (ctx) => {
+    console.log(ctx.message.from);
     let userID = ctx.message.from.id;
+    let userFName = ctx.message.from.first_name;
+    let userLName = ctx.message.from.last_name;
+    let userLogin = ctx.message.from.username;
     let userType = '';
     await user.findOne({
         "telegramID": userID
@@ -47,7 +49,10 @@ bot.start(async (ctx) => {
             userType = 'user';
             let candidate = new user({
                 "telegramID": ctx.message.from.id,
-                "type": userType
+                "type": userType,
+                "telegramFirstName": userFName,
+                "telegramLastName": userLName,
+                "telegramLogin": userLogin,
             });
             candidate.save(async (errS, resS) => {
                 if (errS) return tx.reply(errS);
@@ -76,16 +81,68 @@ bot.start(async (ctx) => {
         return null;
     });
 });
-bot.hears('/getOrder_*/', async (ctx) => {
-    // ctx.reply(JSON.stringify(ctx.update));
-    console.log(ctx);
+bot.action(/getOrder/, async (ctx) => {
+    let chatType = ctx.update.callback_query.message.chat.type;
+    if ((chatType == "group") || (chatType == "supergroup")) {
+        let mongoID = ctx.update.callback_query.data.slice(9);
+        let msgID = ctx.update.callback_query.message.message_id;
+        let chatID = ctx.update.callback_query.message.chat.id;
+        let workerOBJ = ctx.update.callback_query.from;
+        let text = ctx.update.callback_query.message.text;
+        user.findOne({
+            telegramID: workerOBJ.id
+        }, (errF, resF) => {
+            if (errF) {
+                return ctx.reply("Ошибка поиска исполнителя в БД.");
+            }
+            if (resF) {
+                if (resF.type == "worker") {
+                    order.findOne({
+                        _id: mongoID
+                    }, (err, res) => {
+                        if (err) {
+                            console.log(err);
+                            return ctx.reply("Ошибка. Заказ не найден.");
+                        }
+                        if (res) {
+                            if (res.worker == null) {
+                                order.updateOne({
+                                    _id: mongoID
+                                }, {
+                                    worker: workerOBJ.id
+                                }, (errU, resU) => {
+                                    if (errU) {
+                                        console.log(errU);
+                                        return ctx.reply('Ошибка обновления заказа.');
+                                    }
+                                    if (resU) {
+                                        let entities = ctx.update.callback_query.message.entities;
+                                        for (let i = 0; i < entities.length; i++) {
+                                            if (entities[i].type == "text_link") {
+                                                entities[i].type = 'text_mention';
+                                                entities[i].user = workerOBJ;
+                                                entities[i].length = 1 + workerOBJ.first_name.length + workerOBJ.last_name.length;
+                                            }
+                                        }
+                                        ctx.telegram.editMessageText(chatID, msgID, null, text.replace('Ожидается', workerOBJ.first_name + ' ' + workerOBJ.last_name), {
+                                            entities: entities
+                                        });
+                                    }
+                                })
+                            }
+                        }
+                    });
+                }
+            }
+        });
+
+    } else {
+        ctx.reply("Вы не можете принимать заказы, находясь вне группы.");
+    };
+
 });
 bot.on("message", (ctx) => {
-    // console.log((ctx.update.message.chat.type == "group") || (ctx.update.message.chat.type == "supergroup"));
     if ((ctx.update.message.chat.type == "group") || (ctx.update.message.chat.type == "supergroup")) {
-        console.log(ctx.message);
-        console.log();
-        // ctx.telegram.sendMessage(ctx.message.chat.id, "Бот находяиться в групповом чате, управление не доступно", keyboards.remove);
         return ctx.scene.enter('groupScene');
     } else {
         switch (ctx.message.text) {
@@ -99,7 +156,6 @@ bot.on("message", (ctx) => {
                 return ctx.scene.enter("myFromsScene");
                 break;
             case "createFormScene":
-                // console.log(ctx.message);
                 return ctx.scene.enter("createFormScene");
                 break;
             default:

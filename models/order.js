@@ -25,6 +25,12 @@ const order = new Schema({
         required: false,
         unique: false,
         default: null
+    },
+    status: {
+        type: String,
+        required: false,
+        unique: false,
+        default: 'pending'
     }
     // creationDate: {
     //     type: Date,
