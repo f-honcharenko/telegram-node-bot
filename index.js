@@ -109,7 +109,8 @@ bot.action(/getOrder/, async (ctx) => {
                                 order.updateOne({
                                     _id: mongoID
                                 }, {
-                                    worker: workerOBJ.id
+                                    worker: workerOBJ.id,
+                                    status: 'pending'
                                 }, (errU, resU) => {
                                     if (errU) {
                                         console.log(errU);
@@ -143,8 +144,9 @@ bot.action(/getOrder/, async (ctx) => {
 });
 bot.on("message", (ctx) => {
     if ((ctx.update.message.chat.type == "group") || (ctx.update.message.chat.type == "supergroup")) {
-        return ctx.scene.enter('groupScene');
+        // return ctx.scene.enter('groupScene');
     } else {
+        console.log(ctx.message);
         switch (ctx.message.text) {
             case "startUserScene":
                 return ctx.scene.enter("startUserScene");

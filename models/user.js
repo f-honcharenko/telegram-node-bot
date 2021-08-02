@@ -26,22 +26,22 @@ const userSchema = new Schema({
         type: String,
         required: true,
     },
-    orders: {
-        required: false,
+    // orders: {
+    //     required: false,
 
-        completed: {
-            type: Number,
-            default: 0
-        },
-        pending: {
-            type: Number,
-            default: 0
-        },
-        canceled: {
-            type: Number,
-            default: 0
-        },
-    }
+    //     completed: {
+    //         type: Number,
+    //         default: 0
+    //     },
+    //     pending: {
+    //         type: Number,
+    //         default: 0
+    //     },
+    //     canceled: {
+    //         type: Number,
+    //         default: 0
+    //     },
+    // }
 }, {
     collection: 'users'
 }, {

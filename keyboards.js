@@ -6,6 +6,7 @@ class keyboards {
     static start = Markup.keyboard([
         Markup.button.callback("Создать форму"),
         Markup.button.callback("Мои формы"),
+        Markup.button.callback("Консультации"),
     ]);
     static myForms = Markup.keyboard([
         Markup.button.callback("Показать формы"),

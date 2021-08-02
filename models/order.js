@@ -30,7 +30,7 @@ const order = new Schema({
         type: String,
         required: false,
         unique: false,
-        default: 'pending'
+        default: 'pendingWorker'
     }
     // creationDate: {
     //     type: Date,

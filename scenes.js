@@ -70,54 +70,35 @@ class scenesGen {
                     canceledOrders: 0,
 
                 };
-                //workers
-                await user.find({
-                    type: "worker"
-                }, async (errF, resF) => {
-                    if (errF) {
-                        return ctx.reply("Ошибка поиска рабочих.");
-                    }
-                    if (resF) {
-                        info.workers = resF.length;
-                    }
-                }).then(async () => {
-                    await order.find({
-                        status: 'pending'
-                    }, async (errF, resF) => {
-                        if (errF) {
-                            return ctx.reply("Ошибка поиска pendingOrders.");
-                        }
-                        if (resF) {
-                            info.pendingOrders = resF.length;
-                        }
-                    });
-                });
+                async function getData() {
+
+                };
                 //users
-                await user.find({
-                    type: "user"
-                }, async (errF, resF) => {
+                await user.find({}, async (errF, resF) => {
                     if (errF) {
                         return ctx.reply("Ошибка поиска пользователей.");
                     }
                     if (resF) {
-                        info.users = resF.length;
+                        info.users = resF.filter(user => user.type == 'user').length;
+                        info.moders = resF.filter(user => user.type == 'moder').length;
+                        info.workers = resF.filter(user => user.type == 'worker').length;
                     }
                 });
-                //moders
-                await user.find({
-                    type: "moder"
-                }, async (errF, resF) => {
+
+                //pendingOrders
+                await order.find({}, async (errF, resF) => {
                     if (errF) {
-                        return ctx.reply("Ошибка поиска модераторов.");
+                        return ctx.reply("Ошибка поиска заказов.");
                     }
                     if (resF) {
-                        info.moders = resF.length;
+                        info.pendingWorkerOrders = resF.filter(order => order.status == 'pendingWorker').length;
+                        info.pendingOrders = resF.filter(order => order.status == 'pending').length;
+                        info.doneOrders = resF.filter(order => order.status == 'done').length;
+                        info.canceledOrders = resF.filter(order => order.status == 'canceled').length;
                     }
                 });
-                //pendingOrders
-
                 console.log(info);
-                ctx.reply(`<b>Пользователи: </b> ${info.users}\n<b>Модераторы: </b> ${info.moders}\n<b>Бухгалтеры: </b> ${info.workers}\n<b>Выполнено заказов: </b> ${info.doneOrders}\n<b>Заказы, которые выполняются: </b> ${info.pendingOrders}\n<b>Заказы, которые ожидают Исполнителя: </b> ${info.pendingWorkerOrders}\n<b>Отменено заказов :</b> ${info.canceledOrders}\n `, {
+                await ctx.reply(`<b>Пользователи: </b> ${info.users}\n<b>Модераторы: </b> ${info.moders}\n<b>Бухгалтеры: </b> ${info.workers}\n<b>Выполнено заказов: </b> ${info.doneOrders}\n<b>Заказы, которые выполняются: </b> ${info.pendingOrders}\n<b>Заказы, которые ожидают Исполнителя: </b> ${info.pendingWorkerOrders}\n<b>Отменено заказов :</b> ${info.canceledOrders}\n `, {
                     parse_mode: 'HTML'
                 });
 
@@ -127,20 +108,39 @@ class scenesGen {
         })
         startAdminScene.action(/getInfo_/, async (ctx) => {
 
-            let condidateId = ctx.update.callback_query.data.slice(8);
-            console.log(condidateId);
+            let candidateId = ctx.update.callback_query.data.slice(8);
+            console.log(candidateId);
             user.findOne({
-                telegramID: condidateId
+                telegramID: candidateId
             }, (errF, resF) => {
                 if (errF) {
                     return ctx.reply("Ошибка поиска исполнителя в БД.");
                 }
                 if (resF) {
-                    let info = `
-                    <b>Имя в системе: </b> ${resF.telegramFirstName}\n<b>Фамилия в системе: </b> ${resF.telegramLastName}\n<b>TelegramID: </b><a href="tg://user?id=${resF.telegramID}"> ${resF.telegramID}</a> \n<b>Заказы: </b>\n\t<i>Закончено: </i>${resF.orders.completed} \n\t<i>На исполнении: </i>${resF.orders.pending}\n\t<i>Отменено: </i>${resF.orders.canceled}`
-                    return ctx.reply(info, {
-                        parse_mode: 'HTML'
+                    order.find({
+                        worker: candidateId
+                    }, (errFA, resFA) => {
+                        if (errFA) {
+                            return ctx.reply("Ошибка поиска заказов данного пользователя.");
+                        }
+                        if (resFA) {
+                            console.log(resFA);
+                            let data = {
+                                all: resFA.length,
+                                done: resFA.filter(order => order.status == 'done').length,
+                                pending: resFA.filter(order => order.status == 'pending').length,
+                                canceled: resFA.filter(order => order.status == 'canceled').length,
+                            }
+                            console.log(resFA.filter(order => order.type == 'pending'));
+                            let info = `
+                    <b>Имя в системе: </b> ${resF.telegramFirstName}\n<b>Фамилия в системе: </b> ${resF.telegramLastName}\n<b>TelegramID: </b><a href="tg://user?id=${resF.telegramID}"> ${resF.telegramID}</a> \n<b>Заказы: (${data.all})</b>\n\t<i>Закончено: </i>${data.done} \n\t<i>На исполнении: </i>${data.pending}\n\t<i>Отменено: </i>${data.canceled}`
+                            return ctx.reply(info, {
+                                parse_mode: 'HTML'
+                            });
+                        }
                     });
+
+
                 }
             });
 
@@ -164,7 +164,8 @@ class scenesGen {
                         let responce = '';
                         let index = 1;
                         res.forEach((el) => {
-                            responce += `<b>⬛⬛⬛${index}⬛⬛⬛</b>\nУслуга: ${el.title}\nДата: ${new Date(el.creationDate).toJSON().slice(0,19).replace('T',' ').replace('-', '.').replace('-', '.')}\nИсполнитель: ${el.worker==null?'Ожидается\n\n':'Найден\n\n'}`;
+                            console.log(el);
+                            responce += `<b>⬛⬛⬛${index}⬛⬛⬛</b>\nУслуга: ${el.title}\nДата: ${new Date(el.creationDate).toJSON().slice(0,19).replace('T',' ').replace('-', '.').replace('-', '.')}\nИсполнитель: ${el.status=='pendingWorker'?'Ожидает исполнителя\n\n':el.status=='pending'?'Исполняется\n\n':el.status=='canceled'?'Отменён\n\n':el.status=='done'?'Готов\n\n':'Неизвестно\n\n'}`;
                             index++;
                         });
                         return ctx.reply('Список ваших заказов (' + res.length + '):\n' + responce, {
