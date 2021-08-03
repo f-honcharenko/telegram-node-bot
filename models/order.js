@@ -31,6 +31,11 @@ const order = new Schema({
         required: false,
         unique: false,
         default: 'pendingWorker'
+    },
+    rate: {
+        type: Number,
+        required: false,
+        default: 5
     }
     // creationDate: {
     //     type: Date,

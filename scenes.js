@@ -33,6 +33,86 @@ class scenesGen {
         })
         return startUserScene;
     }
+    static startModerScene() {
+        const startModerScene = new Scenes.BaseScene('startModerScene');
+
+        startModerScene.enter(async (ctx) => {
+            return ctx.reply("start MODER scene", keyboards.startModer);
+        })
+
+        startModerScene.on('message', async (ctx) => {
+            switch (ctx.message.chat.id) {
+                case ' ':
+                    break;
+
+                default:
+                    return ctx.reply('Пожалуйста, используйте меню для навигации.');
+                    break;
+            }
+        })
+        return startModerScene;
+    }
+    static startWorkerScene() {
+        const startWorkerScene = new Scenes.BaseScene('startWorkerScene');
+
+        startWorkerScene.enter(async (ctx) => {
+            return ctx.reply("start Worker scene", keyboards.startWorker);
+        })
+
+        startWorkerScene.on('message', async (ctx) => {
+            console.log(ctx.message.from.id);
+            switch (ctx.message.text) {
+                case 'Мои заказы':
+                    ctx.reply('Мой профиль');
+                    break;
+                case 'Мой профиль':
+                    user.findOne({
+                        telegramID: ctx.message.from.id
+                    }, (errF, resF) => {
+                        if (errF) {
+                            return ctx.reply("Ошибка поиска исполнителя в БД.");
+                        }
+                        if (resF) {
+                            order.find({
+                                worker: ctx.message.from.id
+                            }, (errFA, resFA) => {
+                                if (errFA) {
+                                    return ctx.reply("Ошибка поиска заказов данного пользователя.");
+                                }
+                                if (resFA) {
+                                    let data = {
+                                        all: resFA.length,
+                                        done: resFA.filter(order => order.status == 'done').length,
+                                        pending: resFA.filter(order => order.status == 'pending').length,
+                                        canceled: resFA.filter(order => order.status == 'canceled').length,
+                                        rate: () => {
+                                            let arr = resFA.filter(order => order.status == 'done');
+                                            console.log('arr', arr);
+                                            let sum = 0;
+                                            arr.forEach((el) => {
+                                                sum += Number(el.rate);
+                                            });
+                                            return sum / Number(arr.length)
+                                        }
+                                    }
+                                    let info = `
+                            <b>Имя в системе: </b> ${resF.telegramFirstName}\n<b>Фамилия в системе: </b> ${resF.telegramLastName}\n<b>TelegramID: </b><a href="tg://user?id=${resF.telegramID}"> ${resF.telegramID}</a> \n<b>Заказы: (${data.all})</b>\n\t<i>Закончено: </i>${data.done} \n\t<i>На исполнении: </i>${data.pending}\n\t<i>Отменено: </i>${data.canceled}\n<b>Рейтинг: </b>${data.rate()}`
+                                    return ctx.reply(info, {
+                                        parse_mode: 'HTML'
+                                    });
+                                }
+                            });
+                        }
+                    });
+                    break;
+
+                default:
+                    return ctx.reply('Пожалуйста, используйте меню для навигации.');
+                    break;
+            }
+        })
+        return startWorkerScene;
+    }
     static startAdminScene() {
         const startAdminScene = new Scenes.BaseScene('startAdminScene');
 
@@ -54,9 +134,9 @@ class scenesGen {
                             buttonsArray.push([Markup.button.callback(el.telegramFirstName + ' ' + el.telegramLastName, 'getInfo_' + el.telegramID)]);
                         });
                         let inlineMessageRatingKeyboard = Markup.inlineKeyboard(buttonsArray);
-                        return ctx.reply('Список бухгалетров (type= worker):\n', inlineMessageRatingKeyboard);
+                        return ctx.reply('Список исполнителей (type= worker):\n', inlineMessageRatingKeyboard);
                     } else {
-                        return ctx.reply("Список бухгалетров (type= worker) пуст.");
+                        return ctx.reply("Список исполнителей (type= worker) пуст.");
                     };
                 });
             } else if (ctx.message.text == "Общая статистика") {
@@ -82,6 +162,7 @@ class scenesGen {
                         info.users = resF.filter(user => user.type == 'user').length;
                         info.moders = resF.filter(user => user.type == 'moder').length;
                         info.workers = resF.filter(user => user.type == 'worker').length;
+                        info.admins = resF.filter(user => user.type == 'admin').length;
                     }
                 });
 
@@ -91,23 +172,21 @@ class scenesGen {
                         return ctx.reply("Ошибка поиска заказов.");
                     }
                     if (resF) {
+                        console.log('RES', resF.length);
                         info.pendingWorkerOrders = resF.filter(order => order.status == 'pendingWorker').length;
                         info.pendingOrders = resF.filter(order => order.status == 'pending').length;
                         info.doneOrders = resF.filter(order => order.status == 'done').length;
                         info.canceledOrders = resF.filter(order => order.status == 'canceled').length;
                     }
+                    await ctx.reply(`<b>Администраторы: </b> ${info.admins}\n<b>Пользователи: </b> ${info.users}\n<b>Модераторы: </b> ${info.moders}\n<b>Исполнители: </b> ${info.workers}\n<b>Выполнено заказов: </b> ${info.doneOrders}\n<b>Заказы, которые выполняются: </b> ${info.pendingOrders}\n<b>Заказы, которые ожидают Исполнителя: </b> ${info.pendingWorkerOrders}\n<b>Отменено заказов :</b> ${info.canceledOrders}\n `, {
+                        parse_mode: 'HTML'
+                    });
                 });
-                console.log(info);
-                await ctx.reply(`<b>Пользователи: </b> ${info.users}\n<b>Модераторы: </b> ${info.moders}\n<b>Бухгалтеры: </b> ${info.workers}\n<b>Выполнено заказов: </b> ${info.doneOrders}\n<b>Заказы, которые выполняются: </b> ${info.pendingOrders}\n<b>Заказы, которые ожидают Исполнителя: </b> ${info.pendingWorkerOrders}\n<b>Отменено заказов :</b> ${info.canceledOrders}\n `, {
-                    parse_mode: 'HTML'
-                });
-
             } else {
                 await ctx.reply("Пожалуйста, используйте меню для навигации.");
             }
         })
         startAdminScene.action(/getInfo_/, async (ctx) => {
-
             let candidateId = ctx.update.callback_query.data.slice(8);
             console.log(candidateId);
             user.findOne({
@@ -130,10 +209,19 @@ class scenesGen {
                                 done: resFA.filter(order => order.status == 'done').length,
                                 pending: resFA.filter(order => order.status == 'pending').length,
                                 canceled: resFA.filter(order => order.status == 'canceled').length,
+                                rate: () => {
+                                    let arr = resFA.filter(order => order.status == 'done');
+                                    console.log('arr', arr);
+                                    let sum = 0;
+                                    arr.forEach((el) => {
+                                        sum += Number(el.rate);
+                                    });
+                                    return sum / Number(arr.length)
+                                }
                             }
                             console.log(resFA.filter(order => order.type == 'pending'));
                             let info = `
-                    <b>Имя в системе: </b> ${resF.telegramFirstName}\n<b>Фамилия в системе: </b> ${resF.telegramLastName}\n<b>TelegramID: </b><a href="tg://user?id=${resF.telegramID}"> ${resF.telegramID}</a> \n<b>Заказы: (${data.all})</b>\n\t<i>Закончено: </i>${data.done} \n\t<i>На исполнении: </i>${data.pending}\n\t<i>Отменено: </i>${data.canceled}`
+                    <b>Имя в системе: </b> ${resF.telegramFirstName}\n<b>Фамилия в системе: </b> ${resF.telegramLastName}\n<b>TelegramID: </b><a href="tg://user?id=${resF.telegramID}"> ${resF.telegramID}</a> \n<b>Заказы: (${data.all})</b>\n\t<i>Закончено: </i>${data.done} \n\t<i>На исполнении: </i>${data.pending}\n\t<i>Отменено: </i>${data.canceled}\n<b>Рейтинг: </b>${data.rate()}`
                             return ctx.reply(info, {
                                 parse_mode: 'HTML'
                             });
@@ -155,30 +243,102 @@ class scenesGen {
         })
 
         myFromsScene.on('message', async (ctx) => {
-            if (ctx.message.text == "Показать формы") {
-                order.find({
-                    creatorTelegramID: ctx.message.from.id
-                }, (err, res) => {
-                    if (err) ctx.reply("ERROR\n" + err);
-                    if (res.length != 0) {
-                        let responce = '';
-                        let index = 1;
-                        res.forEach((el) => {
-                            console.log(el);
-                            responce += `<b>⬛⬛⬛${index}⬛⬛⬛</b>\nУслуга: ${el.title}\nДата: ${new Date(el.creationDate).toJSON().slice(0,19).replace('T',' ').replace('-', '.').replace('-', '.')}\nИсполнитель: ${el.status=='pendingWorker'?'Ожидает исполнителя\n\n':el.status=='pending'?'Исполняется\n\n':el.status=='canceled'?'Отменён\n\n':el.status=='done'?'Готов\n\n':'Неизвестно\n\n'}`;
-                            index++;
-                        });
-                        return ctx.reply('Список ваших заказов (' + res.length + '):\n' + responce, {
-                            parse_mode: 'html'
-                        });
-                    } else {
-                        return ctx.reply("Список ваших заказов пуст.");
-                    };
-                });
-            } else if (ctx.message.text == "Назад") {
-                await ctx.scene.enter('startUserScene');
-            } else {
-                await ctx.reply("Пожалуйста, используйте меню для навигации.");
+            switch (ctx.message.text) {
+                case "Готовые":
+                    order.find({
+                        creatorTelegramID: ctx.message.from.id,
+                        status: 'done'
+                    }, (err, res) => {
+                        if (err) ctx.reply("ERROR\n" + err);
+                        if (res.length != 0) {
+                            let responce = '';
+                            let index = 1;
+                            res.forEach((el) => {
+                                console.log(el);
+                                responce += `<b>⬛⬛⬛${index}⬛⬛⬛</b>\nУслуга: ${el.title}\nДата: ${new Date(el.creationDate).toJSON().slice(0,19).replace('T',' ').replace('-', '.').replace('-', '.')}\nСтатус: ${el.status=='pendingWorker'?'Ожидает исполнителя\n\n':el.status=='pending'?'Исполняется\n\n':el.status=='canceled'?'Отменён\n\n':el.status=='done'?'Готов\n\n':'Неизвестно\n\n'}`;
+                                index++;
+                            });
+                            return ctx.reply('Готоые заказы: (' + res.length + '):\n' + responce, {
+                                parse_mode: 'html'
+                            });
+                        } else {
+                            return ctx.reply("Нет готовых заказов.");
+                        };
+                    });
+                    break;
+                case "Выполняющиеся":
+                    order.find({
+                        creatorTelegramID: ctx.message.from.id,
+                        status: 'pending'
+                    }, (err, res) => {
+                        if (err) ctx.reply("ERROR\n" + err);
+                        if (res.length != 0) {
+                            let responce = '';
+                            let index = 1;
+                            res.forEach((el) => {
+                                console.log(el);
+                                responce += `<b>⬛⬛⬛${index}⬛⬛⬛</b>\nУслуга: ${el.title}\nДата: ${new Date(el.creationDate).toJSON().slice(0,19).replace('T',' ').replace('-', '.').replace('-', '.')}\nСтатус: ${el.status=='pendingWorker'?'Ожидает исполнителя\n\n':el.status=='pending'?'Исполняется\n\n':el.status=='canceled'?'Отменён\n\n':el.status=='done'?'Готов\n\n':'Неизвестно\n\n'}`;
+                                index++;
+                            });
+                            return ctx.reply('Выполняющиеся заказы: (' + res.length + '):\n' + responce, {
+                                parse_mode: 'html'
+                            });
+                        } else {
+                            return ctx.reply("Нет выполняющихся заказов.");
+                        };
+                    });
+                    break;
+                case "Отмененые":
+                    order.find({
+                        creatorTelegramID: ctx.message.from.id,
+                        status: 'canceled'
+                    }, (err, res) => {
+                        if (err) ctx.reply("ERROR\n" + err);
+                        if (res.length != 0) {
+                            let responce = '';
+                            let index = 1;
+                            res.forEach((el) => {
+                                console.log(el);
+                                responce += `<b>⬛⬛⬛${index}⬛⬛⬛</b>\nУслуга: ${el.title}\nДата: ${new Date(el.creationDate).toJSON().slice(0,19).replace('T',' ').replace('-', '.').replace('-', '.')}\nСтатус: ${el.status=='pendingWorker'?'Ожидает исполнителя\n\n':el.status=='pending'?'Исполняется\n\n':el.status=='canceled'?'Отменён\n\n':el.status=='done'?'Готов\n\n':'Неизвестно\n\n'}`;
+                                index++;
+                            });
+                            return ctx.reply('Отмененные заказы: (' + res.length + '):\n' + responce, {
+                                parse_mode: 'html'
+                            });
+                        } else {
+                            return ctx.reply("Нет отмененных заказов.");
+                        };
+                    });
+                    break;
+                case "Ожидают исполнителя":
+                    order.find({
+                        creatorTelegramID: ctx.message.from.id,
+                        status: 'pendingWorker'
+                    }, (err, res) => {
+                        if (err) ctx.reply("ERROR\n" + err);
+                        if (res.length != 0) {
+                            let responce = '';
+                            let index = 1;
+                            res.forEach((el) => {
+                                console.log(el);
+                                responce += `<b>⬛⬛⬛${index}⬛⬛⬛</b>\nУслуга: ${el.title}\nДата: ${new Date(el.creationDate).toJSON().slice(0,19).replace('T',' ').replace('-', '.').replace('-', '.')}\nСтатус: ${el.status=='pendingWorker'?'Ожидает исполнителя\n\n':el.status=='pending'?'Исполняется\n\n':el.status=='canceled'?'Отменён\n\n':el.status=='done'?'Готов\n\n':'Неизвестно\n\n'}`;
+                                index++;
+                            });
+                            return ctx.reply('Заказы ожидающие исполнителя: (' + res.length + '):\n' + responce, {
+                                parse_mode: 'html'
+                            });
+                        } else {
+                            return ctx.reply("Нет заказов ожидающих исполнителя.");
+                        };
+                    });
+                    break;
+
+                case "Назад":
+                    await ctx.scene.enter('startUserScene');
+                    break;
+                default:
+                    await ctx.reply("Пожалуйста, используйте меню для навигации.");
+                    break;
             }
         })
         return myFromsScene;

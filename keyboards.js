@@ -4,13 +4,39 @@ const {
 
 class keyboards {
     static start = Markup.keyboard([
-        Markup.button.callback("Создать форму"),
-        Markup.button.callback("Мои формы"),
-        Markup.button.callback("Консультации"),
+        [
+            Markup.button.callback("Создать форму"),
+            Markup.button.callback("Мои формы"),
+        ],
+        [
+            Markup.button.callback("Консультации"),
+        ]
     ]);
+    static startWorker = Markup.keyboard([
+        [
+            Markup.button.callback("Мой профиль"),
+            Markup.button.callback("Мои заказы"),
+        ]
+    ]);
+    static startModer = Markup.keyboard([
+        [
+            Markup.button.callback("Мой профиль"),
+            Markup.button.callback("Мои заказы"),
+        ]
+    ]);
+
     static myForms = Markup.keyboard([
-        Markup.button.callback("Показать формы"),
-        Markup.button.callback("Назад"),
+        [
+            Markup.button.callback("Готовые"),
+            Markup.button.callback("Выполняющиеся"),
+        ],
+        [
+            Markup.button.callback("Ожидают исполнителя"),
+            Markup.button.callback("Отмененые"),
+        ],
+        [
+            Markup.button.callback("Назад"),
+        ]
     ]);
 
     static createForm = Markup.keyboard([
@@ -23,8 +49,7 @@ class keyboards {
             Markup.button.callback("Разное")
         ],
         [
-            Markup.button.callback("Налоговый учет"),
-            Markup.button.callback("Консультации"),
+            Markup.button.callback("Налоговый учет")
         ],
         [
             Markup.button.callback("Назад"),
@@ -33,9 +58,11 @@ class keyboards {
     static adminForm = Markup.keyboard([
         [
             Markup.button.callback("Рейтинг бухгалтеров"),
+            Markup.button.callback("Назначить модератором"),
         ],
         [
             Markup.button.callback("Общая статистика"),
+            Markup.button.callback("Назначить исполнителем"),
         ]
     ]);
     static scenes = Markup.keyboard([

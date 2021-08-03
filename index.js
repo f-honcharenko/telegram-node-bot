@@ -19,7 +19,7 @@ const order = require('./models/order');
 const keyboards = require('./keyboards');
 
 //CONSTS
-const stage = new Scenes.Stage([scenesGen.startUserScene(), scenesGen.myFromsScene(), scenesGen.groupScene(), scenesGen.createFormScene(), scenesGen.startAdminScene()])
+const stage = new Scenes.Stage([scenesGen.startUserScene(), scenesGen.startModerScene(), scenesGen.startWorkerScene(), scenesGen.myFromsScene(), scenesGen.groupScene(), scenesGen.createFormScene(), scenesGen.startAdminScene()])
 const bot = new Telegraf(config.get("token"));
 const port = process.env.PORT || config.get("port");
 const app = express();
@@ -142,28 +142,56 @@ bot.action(/getOrder/, async (ctx) => {
     };
 
 });
-bot.on("message", (ctx) => {
+bot.on("message", async (ctx) => {
     if ((ctx.update.message.chat.type == "group") || (ctx.update.message.chat.type == "supergroup")) {
         // return ctx.scene.enter('groupScene');
     } else {
-        console.log(ctx.message);
-        switch (ctx.message.text) {
-            case "startUserScene":
-                return ctx.scene.enter("startUserScene");
-                break;
-            case "startAdminScene":
-                return ctx.scene.enter("startAdminScene");
-                break;
-            case "myFromsScene":
-                return ctx.scene.enter("myFromsScene");
-                break;
-            case "createFormScene":
-                return ctx.scene.enter("createFormScene");
-                break;
-            default:
-                ctx.reply(`Похоже, вы находитесь вне сцен, пожалуйста, выберите одну из перечисленных в меню.`, keyboards.scenes);
-                break;
-        }
+        await user.findOne({
+            "telegramID": ctx.message.chat.id
+        }, {}, (err, res) => {
+            if (err) return ctx.reply(err);
+            if (res) {
+                userType = res.type;
+            } else {
+                return ctx.reply('Проищошла ошибка. Перезапустите бота.');
+            }
+            switch (userType) {
+                case "user":
+                    ctx.reply("Тип учетной записи: USER");
+                    ctx.scene.enter("startUserScene");
+                    break;
+                case "admin":
+                    ctx.reply("Тип учетной записи: ADMIN");
+                    ctx.scene.enter("startAdminScene");
+                    break;
+                case "worker":
+                    ctx.reply("Тип учетной записи: WORKER");
+                    ctx.scene.enter("startWorkerScene");
+                    break;
+                case "moder":
+                    ctx.reply("Тип учетной записи: MODER");
+                    ctx.scene.enter("startModerScene");
+                    break;
+            }
+            return null;
+        });
+        // switch (ctx.message.text) {
+        //     case "startUserScene":
+        //         return ctx.scene.enter("startUserScene");
+        //         break;
+        //     case "startAdminScene":
+        //         return ctx.scene.enter("startAdminScene");
+        //         break;
+        //     case "myFromsScene":
+        //         return ctx.scene.enter("myFromsScene");
+        //         break;
+        //     case "createFormScene":
+        //         return ctx.scene.enter("createFormScene");
+        //         break;
+        //     default:
+        //         ctx.reply(`Похоже, вы находитесь вне сцен, пожалуйста, выберите одну из перечисленных в меню.`, keyboards.scenes);
+        //         break;
+        // }
     }
 });
 // bot.telegram.setWebhook(config.get("webhook-link"));
