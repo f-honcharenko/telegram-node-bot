@@ -4,13 +4,9 @@ const {
     Router,
     Extra
 } = require('telegraf');
-const mongoose = require('mongoose');
 
 const keyboards = require('../keyboards');
-const user = require('../models/user');
 const order = require('../models/order');
-const invoices = require('../invoices');
-const groupList = ["-1001519010099"];
 
 
 function groupChatScene() {

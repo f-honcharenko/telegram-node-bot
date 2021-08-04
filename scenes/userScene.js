@@ -4,7 +4,6 @@ const {
     Router,
     Extra
 } = require('telegraf');
-const mongoose = require('mongoose');
 
 const keyboards = require('../keyboards');
 
