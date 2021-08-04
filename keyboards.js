@@ -14,8 +14,11 @@ class keyboards {
     ]);
     static startWorker = Markup.keyboard([
         [
-            Markup.button.callback("Мой профиль"),
-            Markup.button.callback("Мои заказы"),
+            Markup.button.callback("Рейтинг исполнителей"),
+            Markup.button.callback("Общася статистика"),
+        ],
+        [
+            Markup.button.callback("Назначить исполнителем"),
         ]
     ]);
     static startModer = Markup.keyboard([
