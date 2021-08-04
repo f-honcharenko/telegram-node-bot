@@ -3,5 +3,6 @@
     "provider-token":"410694247:TEST:ef392424-fd6c-4479-87b6-b70d9899e245",
     "port":"8080",
     "webhook-link":"https://github-integration4-iwexs6eomq-uc.a.run.app/webhook",
-    "mongo-link":"mongodb+srv://admin:admin@cluster0.albqm.mongodb.net/nodeTelegramBot?retryWrites=true&w=majority"
+    "mongo-link":"mongodb+srv://admin:admin@cluster0.albqm.mongodb.net/nodeTelegramBot?retryWrites=true&w=majority",
+    "telegram-group-array": ["-1001519010099"]
 }
