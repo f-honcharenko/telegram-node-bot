@@ -80,6 +80,8 @@ function adminScene() {
                     parse_mode: 'HTML'
                 });
             });
+        } else if (ctx.message.text == "Назначить модератором") {
+            return ctx.scene.enter('makeModerScene');
         } else {
             await ctx.reply("Пожалуйста, используйте меню для навигации.");
         }

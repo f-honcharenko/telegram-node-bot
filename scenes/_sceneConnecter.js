@@ -7,6 +7,7 @@ const groupChatScene = require('./groupChatScene');
 const createFormScene = require('./createFormScene');
 const workerFromsScene = require('./workerFromsScene');
 const doneOrderScene = require('./doneOrderScene');
+const makeModerScene = require('./makeModerScene');
 
 
 const scenes = [
@@ -18,7 +19,8 @@ const scenes = [
     groupChatScene,
     createFormScene,
     workerFromsScene,
-    doneOrderScene
+    doneOrderScene,
+    makeModerScene
 ];
 
 module.exports = scenes;

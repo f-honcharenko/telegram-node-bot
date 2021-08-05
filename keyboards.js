@@ -86,6 +86,11 @@ class keyboards {
             Markup.button.callback("createFormScene"),
         ]
     ]);
+    static onlyBack = Markup.keyboard([
+        [
+            Markup.button.callback("Назад"),
+        ]
+    ]);
     static doneOrder = Markup.keyboard([
         [
             Markup.button.callback("Предпросмотр ответа"),
