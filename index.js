@@ -105,37 +105,50 @@ bot.action(/getOrder/, async (ctx) => {
                             return ctx.reply("Ошибка. Заказ не найден.");
                         }
                         if (res) {
-                            if (res.worker == null) {
-                                order.updateOne({
-                                    _id: mongoID
-                                }, {
-                                    worker: workerOBJ.id,
-                                    status: 'pending'
-                                }, (errU, resU) => {
-                                    if (errU) {
-                                        console.log(errU);
-                                        return ctx.reply('Ошибка обновления заказа.');
-                                    }
-                                    if (resU) {
-                                        let entities = ctx.update.callback_query.message.entities;
-                                        for (let i = 0; i < entities.length; i++) {
-                                            if (entities[i].type == "text_link") {
-                                                entities[i].type = 'text_mention';
-                                                entities[i].user = workerOBJ;
-                                                entities[i].length = 1 + workerOBJ.first_name.length + workerOBJ.last_name.length;
-                                            }
+                            if (res.status == 'pendingWorker') {
+                                if (res.worker == null) {
+                                    order.updateOne({
+                                        _id: mongoID
+                                    }, {
+                                        worker: workerOBJ.id,
+                                        status: 'pending'
+                                    }, (errU, resU) => {
+                                        if (errU) {
+                                            return ctx.reply('Ошибка обновления заказа.');
                                         }
-                                        ctx.telegram.editMessageText(chatID, msgID, null, text.replace('Ожидается', workerOBJ.first_name + ' ' + workerOBJ.last_name), {
-                                            entities: entities
-                                        });
-                                        ctx.telegram.sendMessage(res.creatorTelegramID, "Внимание! Ваш заказ принят в обработку одним из исполнителей.");
+                                        if (resU) {
+                                            let entities = ctx.update.callback_query.message.entities;
+                                            for (let i = 0; i < entities.length; i++) {
+                                                if (entities[i].type == "text_link") {
+                                                    entities[i].type = 'text_mention';
+                                                    entities[i].user = workerOBJ;
+                                                    entities[i].length = 1 + workerOBJ.first_name.length + workerOBJ.last_name.length;
+                                                }
+                                            }
+                                            ctx.telegram.editMessageText(chatID, msgID, null, text.replace('Ожидается', workerOBJ.first_name + ' ' + workerOBJ.last_name), {
+                                                entities: entities
+                                            });
+                                            ctx.telegram.sendMessage(res.creatorTelegramID, "Внимание! Ваш заказ принят в обработку одним из исполнителей.");
 
-                                        // ctx.telegram.sendMessage(chatID, msgID, null, text.replace('Ожидается', workerOBJ.first_name + ' ' + workerOBJ.last_name), {
-                                        //     entities: entities
-                                        // });
-                                    }
+                                            // ctx.telegram.sendMessage(chatID, msgID, null, text.replace('Ожидается', workerOBJ.first_name + ' ' + workerOBJ.last_name), {
+                                            //     entities: entities
+                                            // });
+                                        }
+                                    })
+                                }
+                            } else if (res.status == 'canceled') {
+
+                                return ctx.editMessageReplyMarkup({
+                                    inline_keyboard: [
+                                        [{
+                                            text: 'Заказ отменен пользавтелем',
+                                            callback_data: 'nullData'
+                                        }]
+                                    ],
                                 })
+                                // ctx.telegram.editMessageText(chatID, msgID, null, '' + text, );
                             }
+
                         }
                     });
                 }
