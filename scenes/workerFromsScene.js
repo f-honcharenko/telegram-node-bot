@@ -117,11 +117,12 @@ function workerFromsScene() {
                 return ctx.reply("Ошибка поиска Заказа в БД.");
             }
             if (resF) {
-                ctx.reply(`<b>Услуга: </b>${resF.title}\n<b>Дата: </b>${new Date(resF.creationDate).toJSON().slice(0, 19).replace('T', ' ').replace('-', '.').replace('-', '.')}\nСтатус: ${resF.status == 'pendingWorker' ? 'Ожидает исполнителя\n\n' : resF.status == 'pending' ? 'Исполняется\n\n' : resF.status == 'canceled' ? 'Отменён' : resF.status == 'done' ? 'Готов' : 'Неизвестно'}\n<b>Коментарий исполнителя :</b> ${resF.comment==null?'<i>Отсутсвует</i>':resF.comment}`, {
+                ctx.reply(`<b>Услуга: </b>${resF.title}\n<b>Дата: </b>${new Date(resF.creationDate).toJSON().slice(0, 19).replace('T', ' ').replace('-', '.').replace('-', '.')}\n<b>Статус: </b>${resF.status == 'pendingWorker' ? 'Ожидает исполнителя\n\n' : resF.status == 'pending' ? 'Исполняется\n\n' : resF.status == 'canceled' ? 'Отменён' : resF.status == 'done' ? 'Готов' : 'Неизвестно'}\n<b>Коментарий исполнителя :</b> ${resF.comment==null?'<i>Отсутсвует</i>':resF.comment}`, {
                     parse_mode: 'HTML'
                 });
-
-                ctx.replyWithSticker('BQACAgIAAxkBAAINtmELpINFB0MsGMurnoX8b6_Htd_4AAJdEQACWZZZSJw5Fvw1hwRrIAQ')
+                resF.files.forEach(async (fileID) => {
+                    await ctx.replyWithSticker(fileID)
+                });
             }
         });
 

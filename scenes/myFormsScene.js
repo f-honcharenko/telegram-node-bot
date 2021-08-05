@@ -143,6 +143,34 @@ function myFromsScene() {
                 resF.files.forEach(async (fileID) => {
                     await ctx.replyWithSticker(fileID)
                 });
+                if (resF.rate == null) {
+                    await ctx.reply(`Пожалуйста, оценить работу нашего сотрудника:`, {
+                        reply_markup: {
+                            inline_keyboard: [
+                                [{
+                                        text: '1',
+                                        callback_data: 'setRate_' + resF._id + '_1',
+                                    },
+                                    {
+                                        text: '2',
+                                        callback_data: 'setRate_' + resF._id + '_2',
+                                    }, {
+                                        text: '3',
+                                        callback_data: 'setRate_' + resF._id + '_3',
+                                    }, {
+                                        text: '4',
+                                        callback_data: 'setRate_' + resF._id + '_4',
+                                    }, {
+                                        text: '5',
+                                        callback_data: 'setRate_' + resF._id + '_5',
+                                    },
+                                ]
+                            ]
+                        },
+                        parse_mode: 'HTML'
+                    });
+                };
+
             }
         });
 
@@ -214,6 +242,22 @@ function myFromsScene() {
             ]
         })
 
+    });
+    myFromsScene.action(/setRate_/, async (ctx) => {
+        let rateData = ctx.update.callback_query.data.split('_');
+        order.updateOne({
+            _id: rateData[1]
+        }, {
+            rate: rateData[2]
+        }, async (errUo, resUo) => {
+            if (errUo) {
+                await ctx.reply("Ошибка поиск заказа в БД.");
+            }
+            if (resUo) {
+                await ctx.deleteMessage(ctx.update.callback_query.message.message_id);
+                await ctx.reply("Спасибо за оценку!.");
+            }
+        })
     });
     return myFromsScene;
 }

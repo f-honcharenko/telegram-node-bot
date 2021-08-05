@@ -46,10 +46,14 @@ function workerScene() {
                                         let arr = resFA.filter(order => order.status == 'done');
                                         console.log('arr', arr);
                                         let sum = 0;
+                                        let len = 0;
                                         arr.forEach((el) => {
-                                            sum += Number(el.rate);
+                                            if (el.rate != null) {
+                                                len += 1;
+                                                sum += Number(el.rate);
+                                            }
                                         });
-                                        return sum / Number(arr.length)
+                                        return Number(sum / len)
                                     }
                                 }
                                 let info = `
