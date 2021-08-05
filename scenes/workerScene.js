@@ -20,7 +20,7 @@ function workerScene() {
         console.log(ctx.message.from.id);
         switch (ctx.message.text) {
             case 'Мои заказы':
-                ctx.reply('Мой профиль');
+                ctx.scene.enter("workerFromsScene");
                 break;
             case 'Мой профиль':
                 user.findOne({

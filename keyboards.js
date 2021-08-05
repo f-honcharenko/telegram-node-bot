@@ -14,17 +14,17 @@ class keyboards {
     ]);
     static startWorker = Markup.keyboard([
         [
-            Markup.button.callback("Рейтинг исполнителей"),
-            Markup.button.callback("Общася статистика"),
-        ],
-        [
-            Markup.button.callback("Назначить исполнителем"),
+            Markup.button.callback("Мой профиль"),
+            Markup.button.callback("Мои заказы"),
         ]
     ]);
     static startModer = Markup.keyboard([
         [
-            Markup.button.callback("Мой профиль"),
-            Markup.button.callback("Мои заказы"),
+            Markup.button.callback("Рейтинг исполнителей"),
+            Markup.button.callback("Общая статистика"),
+        ],
+        [
+            Markup.button.callback("Назначить исполнителем"),
         ]
     ]);
 
@@ -40,6 +40,16 @@ class keyboards {
         [
             Markup.button.callback("Назад"),
         ]
+    ]);
+    static workerForms = Markup.keyboard([
+        [
+            Markup.button.callback("Готовые"),
+            Markup.button.callback("Выполняющиеся"),
+        ],
+        [
+            Markup.button.callback("Отмененые"),
+            Markup.button.callback("Назад"),
+        ],
     ]);
 
     static createForm = Markup.keyboard([
@@ -70,10 +80,21 @@ class keyboards {
     ]);
     static scenes = Markup.keyboard([
         [
-            Markup.button.callback("startUserScene"),
-            Markup.button.callback("startAdminScene"),
+            Markup.button.callback("userScene"),
+            Markup.button.callback("adminScene"),
             Markup.button.callback("myFromsScene"),
             Markup.button.callback("createFormScene"),
+        ]
+    ]);
+    static doneOrder = Markup.keyboard([
+        [
+            Markup.button.callback("Предпросмотр ответа"),
+
+            Markup.button.callback("Отправить ответ"),
+        ],
+        [
+            Markup.button.callback("Назад"),
+
         ]
     ]);
     static remove = Markup.removeKeyboard();

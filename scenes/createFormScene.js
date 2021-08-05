@@ -74,7 +74,7 @@ function createFormScene() {
             await ctx.reply("[Разное]");
             await ctx.replyWithInvoice(invoices.getDocumentInvoice(ctx.from.id));
         } else if (ctx.message.text == "Назад") {
-            await ctx.scene.enter('startUserScene');
+            await ctx.scene.enter('userScene');
         } else {
             await ctx.reply("Пожалуйста, используйте меню для навигации.");
         }

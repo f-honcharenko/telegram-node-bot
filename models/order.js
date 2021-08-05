@@ -35,7 +35,17 @@ const order = new Schema({
     rate: {
         type: Number,
         required: false,
-        default: 5
+        default: null
+    },
+    comment: {
+        type: String,
+        required: false,
+        default: null
+    },
+    files: {
+        type: [String],
+        requires: false,
+        default: []
     }
     // creationDate: {
     //     type: Date,

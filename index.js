@@ -128,10 +128,11 @@ bot.action(/getOrder/, async (ctx) => {
                                         ctx.telegram.editMessageText(chatID, msgID, null, text.replace('Ожидается', workerOBJ.first_name + ' ' + workerOBJ.last_name), {
                                             entities: entities
                                         });
+                                        ctx.telegram.sendMessage(res.creatorTelegramID, "Внимание! Ваш заказ принят в обработку одним из исполнителей.");
 
-                                        ctx.telegram.sendMessage(chatID, msgID, null, text.replace('Ожидается', workerOBJ.first_name + ' ' + workerOBJ.last_name), {
-                                            entities: entities
-                                        });
+                                        // ctx.telegram.sendMessage(chatID, msgID, null, text.replace('Ожидается', workerOBJ.first_name + ' ' + workerOBJ.last_name), {
+                                        //     entities: entities
+                                        // });
                                     }
                                 })
                             }
@@ -145,6 +146,9 @@ bot.action(/getOrder/, async (ctx) => {
         ctx.reply("Вы не можете принимать заказы, находясь вне группы.");
     };
 
+});
+bot.action(/goToMyOrders/, async (ctx) => {
+    return ctx.scene.enter('myFromsScene');
 });
 bot.on("message", async (ctx) => {
     if ((ctx.update.message.chat.type == "group") || (ctx.update.message.chat.type == "supergroup")) {
