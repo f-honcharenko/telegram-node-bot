@@ -111,18 +111,24 @@ function myFromsScene() {
                 return ctx.reply("Ошибка поиска Заказа в БД.");
             }
             if (resF) {
-                let inlineMessageRatingKeyboard = Markup.inlineKeyboard([Markup.button.callback("Отменить заказ")]);
-                ctx.reply(`<b>Услуга: </b>${resF.title}\n<b>Дата: </b>${new Date(resF.creationDate).toJSON().slice(0, 19).replace('T', ' ').replace('-', '.').replace('-', '.')}\n<b>Статус: </b>${resF.status == 'pendingWorker' ? 'Ожидает исполнителя\n\n' : resF.status == 'pending' ? 'Исполняется\n\n' : resF.status == 'canceled' ? 'Отменён\n\n' : resF.status == 'done' ? 'Готов\n\n' : 'Неизвестно\n\n'}`, {
-                    reply_markup: {
-                        inline_keyboard: [
-                            [{
-                                text: 'Отменить заказ',
-                                callback_data: 'cancleOrder_' + resF._id
-                            }],
-                        ]
-                    },
-                    parse_mode: 'HTML'
-                });
+                if (resF.status == 'canceled') {
+                    ctx.reply(`<b>Услуга: </b>${resF.title}\n<b>Дата: </b>${new Date(resF.creationDate).toJSON().slice(0, 19).replace('T', ' ').replace('-', '.').replace('-', '.')}\n<b>Статус: </b>${resF.status == 'pendingWorker' ? 'Ожидает исполнителя\n\n' : resF.status == 'pending' ? 'Исполняется\n\n' : resF.status == 'canceled' ? 'Отменён\n\n' : resF.status == 'done' ? 'Готов\n\n' : 'Неизвестно\n\n'}`, {
+                        parse_mode: 'HTML'
+                    });
+                } else {
+                    ctx.reply(`<b>Услуга: </b>${resF.title}\n<b>Дата: </b>${new Date(resF.creationDate).toJSON().slice(0, 19).replace('T', ' ').replace('-', '.').replace('-', '.')}\n<b>Статус: </b>${resF.status == 'pendingWorker' ? 'Ожидает исполнителя\n\n' : resF.status == 'pending' ? 'Исполняется\n\n' : resF.status == 'canceled' ? 'Отменён\n\n' : resF.status == 'done' ? 'Готов\n\n' : 'Неизвестно\n\n'}`, {
+                        reply_markup: {
+                            inline_keyboard: [
+                                [{
+                                    text: 'Отменить заказ',
+                                    callback_data: 'cancleOrder_' + resF._id
+                                }],
+                            ]
+                        },
+                        parse_mode: 'HTML'
+                    });
+                }
+
             }
         });
 
