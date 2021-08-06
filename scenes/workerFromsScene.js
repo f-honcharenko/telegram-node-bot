@@ -99,6 +99,14 @@ function workerFromsScene() {
                                 text: 'Завершить заказ',
                                 callback_data: 'doneOrder_' + resF._id
                             }],
+                            [{
+                                text: 'Показать коментарии',
+                                callback_data: 'getComments_' + resF._id
+                            }],
+                            [{
+                                text: 'Прикрепленные файлы',
+                                callback_data: 'getFiles_' + resF._id
+                            }],
                         ]
                     },
                     parse_mode: 'HTML'
@@ -138,9 +146,60 @@ function workerFromsScene() {
             }
             if (resF) {
                 ctx.session.order = resF;
-                // ctx.state.order = resF;
-                // console.log(ctx.session);
                 return ctx.scene.enter('doneOrderScene');
+            }
+        });
+
+    });
+    workerFromsScene.action(/getComments_/, async (ctx) => {
+        let comentData = ctx.update.callback_query.data.split('_');
+        order.findOne({
+            _id: comentData[1]
+        }, (errF, resF) => {
+            if (errF) {
+                return ctx.reply("Ошибка поиска Заказа в БД.");
+            }
+            if (resF) {
+                ctx.session.order = resF;
+                let keyboard = [];
+                resF.userComment.forEach((coment, index) => {
+                    keyboard.push([{
+                        text: coment,
+                        callback_data: 'getCommentByIndex_' + index
+                    }]);
+                });
+                ctx.reply(`Все комментарии: `, {
+                    reply_markup: {
+                        inline_keyboard: keyboard
+                    },
+                    parse_mode: 'HTML'
+                });
+                // console.log(resF.userComment);
+                // ctx.reply(resF.userComment);
+                // return ctx.scene.enter('doneOrderScene');
+            }
+        });
+
+    });
+    workerFromsScene.action(/getCommentByIndex_/, async (ctx) => {
+        let comentData = ctx.update.callback_query.data.split('_');
+        ctx.reply(`<b>Коментарий: </b> ` + ctx.session.order.userComment[comentData[1]], {
+            parse_mode: 'HTML'
+        });
+
+    });
+    workerFromsScene.action(/getFiles/, async (ctx) => {
+        let comentData = ctx.update.callback_query.data.split('_');
+        order.findOne({
+            _id: comentData[1]
+        }, (errF, resF) => {
+            if (errF) {
+                return ctx.reply("Ошибка поиска Заказа в БД.");
+            }
+            if (resF) {
+                resF.userFiles.forEach(async (fileID) => {
+                    await ctx.replyWithSticker(fileID)
+                });
             }
         });
 
