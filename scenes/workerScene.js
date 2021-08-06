@@ -13,7 +13,35 @@ function workerScene() {
     const workerScene = new Scenes.BaseScene('workerScene');
 
     workerScene.enter(async (ctx) => {
-        return ctx.reply("start Worker scene", keyboards.startWorker);
+        await ctx.reply("start Worker scene", keyboards.startWorker);
+        return user.findOne({
+            telegramID: ctx.update.message.from.id
+        }, async (errFo, resFo) => {
+            if (errFo) {
+                console.log("Ошибка поиска пользоваетля в БД.");
+            }
+            if (resFo) {
+                switch (resFo.type) {
+                    case 'worker':
+                        return
+                        // ctx.scene.enter('workerScene');
+                        break;
+                    case 'moder':
+                        return ctx.scene.enter('moderScene');
+                        break;
+                    case 'admin':
+                        return ctx.scene.enter('adminScene');
+                        break;
+                    case 'user':
+                        return ctx.scene.enter('userScene');
+                        break;
+                    default:
+                        await ctx.reply("Ошибка! Неизвестный типа пользователя! Принудительное перемещение в пользовательскую сцену.");
+                        return ctx.scene.enter('userScene');
+                        break;
+                }
+            }
+        });
     })
 
     workerScene.on('message', async (ctx) => {
@@ -66,7 +94,6 @@ function workerScene() {
                     }
                 });
                 break;
-
             default:
                 return ctx.reply('Пожалуйста, используйте меню для навигации.');
                 break;

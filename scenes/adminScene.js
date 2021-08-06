@@ -13,7 +13,35 @@ function adminScene() {
     const adminScene = new Scenes.BaseScene('adminScene');
 
     adminScene.enter(async (ctx) => {
-        return ctx.reply("start ADMIN scene", keyboards.adminForm);
+        await ctx.reply("start ADMIN scene", keyboards.adminForm);
+        return user.findOne({
+            telegramID: ctx.update.message.from.id
+        }, async (errFo, resFo) => {
+            if (errFo) {
+                console.log("Ошибка поиска пользоваетля в БД.");
+            }
+            if (resFo) {
+                switch (resFo.type) {
+                    case 'worker':
+                        return ctx.scene.enter('workerScene');
+                        break;
+                    case 'moder':
+                        return ctx.scene.enter('moderScene');
+                        break;
+                    case 'admin':
+                        return
+                        // ctx.scene.enter('adminScene');
+                        break;
+                    case 'user':
+                        return ctx.scene.enter('userScene');
+                        break;
+                    default:
+                        await ctx.reply("Ошибка! Неизвестный типа пользователя! Принудительное перемещение в пользовательскую сцену.");
+                        return ctx.scene.enter('userScene');
+                        break;
+                }
+            }
+        });
     })
 
     adminScene.on('message', async (ctx) => {

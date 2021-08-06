@@ -13,7 +13,35 @@ function moderScene() {
     const moderScene = new Scenes.BaseScene('moderScene');
 
     moderScene.enter(async (ctx) => {
-        return ctx.reply("start MODER scene", keyboards.startModer);
+        await ctx.reply("start MODER scene", keyboards.startModer);
+        return user.findOne({
+            telegramID: ctx.update.message.from.id
+        }, async (errFo, resFo) => {
+            if (errFo) {
+                console.log("Ошибка поиска пользоваетля в БД.");
+            }
+            if (resFo) {
+                switch (resFo.type) {
+                    case 'worker':
+                        return ctx.scene.enter('workerScene');
+                        break;
+                    case 'moder':
+                        return
+                        // ctx.scene.enter('moderScene');
+                        break;
+                    case 'admin':
+                        return ctx.scene.enter('adminScene');
+                        break;
+                    case 'user':
+                        return ctx.scene.enter('userScene');
+                        break;
+                    default:
+                        await ctx.reply("Ошибка! Неизвестный типа пользователя! Принудительное перемещение в пользовательскую сцену.");
+                        return ctx.scene.enter('userScene');
+                        break;
+                }
+            }
+        });
     })
 
     moderScene.on('message', async (ctx) => {
