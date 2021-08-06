@@ -46,7 +46,17 @@ const order = new Schema({
         type: [String],
         requires: false,
         default: []
-    }
+    },
+    userFiles: {
+        type: [String],
+        requires: false,
+        default: []
+    },
+    userComment: {
+        type: [String],
+        required: false,
+        default: null
+    },
     // creationDate: {
     //     type: Date,
     //     required: true,

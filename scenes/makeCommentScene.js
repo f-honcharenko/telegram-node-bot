@@ -9,26 +9,27 @@ const keyboards = require('../keyboards');
 const user = require('../models/user');
 const order = require('../models/order');
 
-function doneOrderScene() {
-    const doneOrderScene = new Scenes.BaseScene('doneOrderScene');
+function makeCommentScene() {
+    const makeCommentScene = new Scenes.BaseScene('makeCommentScene');
     let responce = {
         files: [],
         comment: null
     };
-    doneOrderScene.enter(async (ctx) => {
-        return ctx.reply("Подготовка формы для ответа. Отправьте файлы и/или коментарий, которые будут отправлены заказчику.", keyboards.doneOrder);
+    makeCommentScene.enter(async (ctx) => {
+        return ctx.reply("Подготовка формы коментария к заказу. Отправьте файлы и/или коментарий, которые будут отправлены заказчику.",
+            keyboards.makeComment);
     })
 
-    doneOrderScene.on('document', async (ctx) => {
+    makeCommentScene.on('document', async (ctx) => {
         responce.files.push(ctx.update.message.document.file_id);
         ctx.reply(`Документ [<i>${ctx.update.message.document.file_name}</i>] успешно добавлен!`, {
             parse_mode: 'HTML'
         });
     });
-    doneOrderScene.on('message', async (ctx) => {
+    makeCommentScene.on('message', async (ctx) => {
         switch (ctx.update.message.text) {
-            case 'Предпросмотр ответа':
-                await ctx.reply('Ваш ответ будет выглядеть так:');
+            case 'Предпросмотр коментария':
+                await ctx.reply('Ваш коментарий будет выглядеть так:');
                 if (responce.comment == null) {
                     await ctx.reply('<i>Коментарий отсутсвует</i>', {
                         parse_mode: 'HTML'
@@ -42,38 +43,39 @@ function doneOrderScene() {
                     await ctx.replyWithSticker(fileID)
                 });
                 break;
-            case 'Отправить ответ и завершить заказ':
+            case 'Отправить коментарий':
                 order.updateOne({
                     _id: ctx.session.order._id
                 }, {
-                    status: 'done',
-                    files: responce.files,
-                    comment: responce.comment,
+                    $push: {
+                        userComment: responce.comment,
+                        userFiles: responce.files,
+                    }
                 }, async (errUo, resUo) => {
                     if (errUo) {
                         delete ctx.session.order;
                         return ctx.reply("Ошибка обновления заказа в БД");
                     }
                     if (resUo) {
-                        await ctx.reply("Ответ успешно отправлен");
-                        ctx.telegram.sendMessage(ctx.session.order.creatorTelegramID, "Внимание! Ваш заказ готов!", {
-                            reply_markup: {
-                                inline_keyboard: [
-                                    [{
-                                        text: 'Перейти в "мои заказы"',
-                                        callback_data: 'goToMyOrders'
-                                    }],
-                                ]
-                            },
+                        await ctx.reply("Коментарий успешно отправлен");
+                        ctx.telegram.sendMessage(ctx.session.order.worker, "Внимание! Заказчик добавил коментарий к одному из заказов!", {
+                            // reply_markup: {
+                            //     inline_keyboard: [
+                            //         [{
+                            //             text: 'Перейти в "мои заказы"',
+                            //             callback_data: 'goToMyOrders'
+                            //         }],
+                            //     ]
+                            // },
                             parse_mode: 'HTML'
                         });
                         delete ctx.session.order;
-                        return ctx.scene.enter('workerFromsScene');
+                        return ctx.scene.enter('userScene');
                     }
                 });
                 break;
             case 'Назад':
-                return ctx.scene.enter('workerFromsScene');
+                return ctx.scene.enter('userScene');
                 break;
             default:
                 console.log(ctx.update.message.text);
@@ -91,8 +93,8 @@ function doneOrderScene() {
 
 
     })
-    return doneOrderScene;
+    return makeCommentScene;
 }
 
 
-module.exports = doneOrderScene();
+module.exports = makeCommentScene();

@@ -123,6 +123,10 @@ function myFromsScene() {
                                     text: 'Отменить заказ',
                                     callback_data: 'cancleOrder_' + resF._id
                                 }],
+                                [{
+                                    text: 'Добавить комментарий/файл',
+                                    callback_data: 'addComent_' + resF._id
+                                }]
                             ]
                         },
                         parse_mode: 'HTML'
@@ -262,6 +266,20 @@ function myFromsScene() {
             if (resUo) {
                 await ctx.deleteMessage(ctx.update.callback_query.message.message_id);
                 await ctx.reply("Спасибо за оценку!.");
+            }
+        })
+    });
+    myFromsScene.action(/addComent_/, async (ctx) => {
+        let comentData = ctx.update.callback_query.data.split('_');
+        order.findOne({
+            _id: comentData[1]
+        }, async (errFo, resFo) => {
+            if (errFo) {
+                await ctx.reply("Ошибка поиск заказа в БД.");
+            }
+            if (resFo) {
+                ctx.session.order = resFo;
+                return ctx.scene.enter('makeCommentScene');
             }
         })
     });

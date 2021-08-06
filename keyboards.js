@@ -95,7 +95,18 @@ class keyboards {
         [
             Markup.button.callback("Предпросмотр ответа"),
 
-            Markup.button.callback("Отправить ответ"),
+            Markup.button.callback("Отправить ответ и завершить заказ"),
+        ],
+        [
+            Markup.button.callback("Назад"),
+
+        ]
+    ]);
+    static makeComment = Markup.keyboard([
+        [
+            Markup.button.callback("Предпросмотр коментария"),
+
+            Markup.button.callback("Отправить коментарий"),
         ],
         [
             Markup.button.callback("Назад"),
