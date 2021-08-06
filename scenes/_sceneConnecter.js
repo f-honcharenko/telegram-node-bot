@@ -8,6 +8,7 @@ const createFormScene = require('./createFormScene');
 const workerFromsScene = require('./workerFromsScene');
 const doneOrderScene = require('./doneOrderScene');
 const makeModerScene = require('./makeModerScene');
+const makeWorkerScene = require('./makeWorkerScene');
 
 
 const scenes = [
@@ -20,7 +21,8 @@ const scenes = [
     createFormScene,
     workerFromsScene,
     doneOrderScene,
-    makeModerScene
+    makeModerScene,
+    makeWorkerScene
 ];
 
 module.exports = scenes;

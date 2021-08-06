@@ -17,73 +17,77 @@ function adminScene() {
     })
 
     adminScene.on('message', async (ctx) => {
-        if (ctx.message.text == "Рейтинг бухгалтеров") {
-            user.find({
-                type: "worker"
-            }, (err, res) => {
-                if (err) ctx.reply("ERROR\n" + err);
-                if (res.length != 0) {
-                    let fn;
-                    let ln;
-                    let buttonsArray = [];
-                    res.forEach((el) => {
-                        fn = el.telegramFirstName == undefined ? ' ' : el.telegramFirstName;
-                        ln = el.telegramLastName == undefined ? ' ' : el.telegramLastName;
-                        buttonsArray.push([Markup.button.callback(fn + ' ' + ln, 'getInfo_' + el.telegramID)]);
-                    });
-                    let inlineMessageRatingKeyboard = Markup.inlineKeyboard(buttonsArray);
-                    return ctx.reply('Список исполнителей (type= worker):\n', inlineMessageRatingKeyboard);
-                } else {
-                    return ctx.reply("Список исполнителей (type= worker) пуст.");
-                };
-            });
-        } else if (ctx.message.text == "Общая статистика") {
-            let info = {
-                workers: 0,
-                users: 0,
-                moders: 0,
-                pendingOrders: 0,
-                pendingWorkerOrders: 0,
-                doneOrders: 0,
-                canceledOrders: 0,
-
-            };
-            async function getData() {
-
-            };
-            //users
-            await user.find({}, async (errF, resF) => {
-                if (errF) {
-                    return ctx.reply("Ошибка поиска пользователей.");
-                }
-                if (resF) {
-                    info.users = resF.filter(user => user.type == 'user').length;
-                    info.moders = resF.filter(user => user.type == 'moder').length;
-                    info.workers = resF.filter(user => user.type == 'worker').length;
-                    info.admins = resF.filter(user => user.type == 'admin').length;
-                }
-            });
-
-            //pendingOrders
-            await order.find({}, async (errF, resF) => {
-                if (errF) {
-                    return ctx.reply("Ошибка поиска заказов.");
-                }
-                if (resF) {
-                    console.log('RES', resF.length);
-                    info.pendingWorkerOrders = resF.filter(order => order.status == 'pendingWorker').length;
-                    info.pendingOrders = resF.filter(order => order.status == 'pending').length;
-                    info.doneOrders = resF.filter(order => order.status == 'done').length;
-                    info.canceledOrders = resF.filter(order => order.status == 'canceled').length;
-                }
-                await ctx.reply(`<b>Администраторы: </b> ${info.admins}\n<b>Пользователи: </b> ${info.users}\n<b>Модераторы: </b> ${info.moders}\n<b>Исполнители: </b> ${info.workers}\n<b>Выполнено заказов: </b> ${info.doneOrders}\n<b>Заказы, которые выполняются: </b> ${info.pendingOrders}\n<b>Заказы, которые ожидают Исполнителя: </b> ${info.pendingWorkerOrders}\n<b>Отменено заказов :</b> ${info.canceledOrders}\n `, {
-                    parse_mode: 'HTML'
+        switch (ctx.message.text) {
+            case 'Рейтинг бухгалтеров':
+                user.find({
+                    type: "worker"
+                }, (err, res) => {
+                    if (err) ctx.reply("ERROR\n" + err);
+                    if (res.length != 0) {
+                        let fn;
+                        let ln;
+                        let buttonsArray = [];
+                        res.forEach((el) => {
+                            fn = el.telegramFirstName == undefined ? ' ' : el.telegramFirstName;
+                            ln = el.telegramLastName == undefined ? ' ' : el.telegramLastName;
+                            buttonsArray.push([Markup.button.callback(fn + ' ' + ln, 'getInfo_' + el.telegramID)]);
+                        });
+                        let inlineMessageRatingKeyboard = Markup.inlineKeyboard(buttonsArray);
+                        return ctx.reply('Список исполнителей (type= worker):\n', inlineMessageRatingKeyboard);
+                    } else {
+                        return ctx.reply("Список исполнителей (type= worker) пуст.");
+                    };
                 });
-            });
-        } else if (ctx.message.text == "Назначить модератором") {
-            return ctx.scene.enter('makeModerScene');
-        } else {
-            await ctx.reply("Пожалуйста, используйте меню для навигации.");
+                break;
+            case 'Общая статистика':
+                let info = {
+                    workers: 0,
+                    users: 0,
+                    moders: 0,
+                    pendingOrders: 0,
+                    pendingWorkerOrders: 0,
+                    doneOrders: 0,
+                    canceledOrders: 0,
+
+                };
+                //users
+                await user.find({}, async (errF, resF) => {
+                    if (errF) {
+                        return ctx.reply("Ошибка поиска пользователей.");
+                    }
+                    if (resF) {
+                        info.users = resF.filter(user => user.type == 'user').length;
+                        info.moders = resF.filter(user => user.type == 'moder').length;
+                        info.workers = resF.filter(user => user.type == 'worker').length;
+                        info.admins = resF.filter(user => user.type == 'admin').length;
+                    }
+                });
+                //orders
+                await order.find({}, async (errF, resF) => {
+                    if (errF) {
+                        return ctx.reply("Ошибка поиска заказов.");
+                    }
+                    if (resF) {
+                        console.log('RES', resF.length);
+                        info.pendingWorkerOrders = resF.filter(order => order.status == 'pendingWorker').length;
+                        info.pendingOrders = resF.filter(order => order.status == 'pending').length;
+                        info.doneOrders = resF.filter(order => order.status == 'done').length;
+                        info.canceledOrders = resF.filter(order => order.status == 'canceled').length;
+                    }
+                    await ctx.reply(`<b>Администраторы: </b> ${info.admins}\n<b>Пользователи: </b> ${info.users}\n<b>Модераторы: </b> ${info.moders}\n<b>Исполнители: </b> ${info.workers}\n<b>Выполнено заказов: </b> ${info.doneOrders}\n<b>Заказы, которые выполняются: </b> ${info.pendingOrders}\n<b>Заказы, которые ожидают Исполнителя: </b> ${info.pendingWorkerOrders}\n<b>Отменено заказов :</b> ${info.canceledOrders}\n `, {
+                        parse_mode: 'HTML'
+                    });
+                });
+                break;
+            case 'Назначить модератором':
+                return ctx.scene.enter('makeModerScene');
+                break;
+            case 'Назначить исполнителем':
+                return ctx.scene.enter('makeWorkerScene');
+                break;
+            default:
+                await ctx.reply("Пожалуйста, используйте меню для навигации.");
+                break;
         }
     })
     adminScene.action(/getInfo_/, async (ctx) => {
