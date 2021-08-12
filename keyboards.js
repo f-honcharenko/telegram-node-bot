@@ -12,6 +12,19 @@ class keyboards {
             Markup.button.callback("Консультации"),
         ]
     ]);
+    static makeForm = Markup.keyboard([
+        [
+            Markup.button.callback("Сбросить форму и вернуться"),
+        ],
+    ]);
+    static makeForm2 = Markup.keyboard([
+        [
+            Markup.button.callback("Подтвердить"),
+        ],
+        [
+            Markup.button.callback("Сбросить форму и вернуться"),
+        ]
+    ]);
     static startWorker = Markup.keyboard([
         [
             Markup.button.callback("Мой профиль"),

@@ -23,7 +23,6 @@ function createFormScene() {
             "creatorTelegramID": userID,
             "title": orderName,
             "creationDate": orderDate,
-            "creationDate": orderDate,
         });
         orderCandidate.save((errS, resS) => {
             if (errS) {
@@ -57,7 +56,8 @@ function createFormScene() {
     createFormScene.on('message', async (ctx) => {
         if (ctx.message.text == "Бухучет") {
             await ctx.reply("[Бухучет]");
-            await ctx.replyWithInvoice(invoices.getDocumentInvoice(ctx.from.id));
+            ctx.scene.enter('makeFormScene');
+            // await ctx.replyWithInvoice(invoices.getDocumentInvoice(ctx.from.id));
         } else if (ctx.message.text == "Первичка") {
             await ctx.reply("[Первичка]");
             await ctx.replyWithInvoice(invoices.getDocumentInvoice(ctx.from.id));
