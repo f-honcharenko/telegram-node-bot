@@ -57,6 +57,12 @@ const order = new Schema({
         required: false,
         default: null
     },
+    _data: {
+        type: [Object],
+        required: false,
+        unique: false,
+        default: null
+    },
     // creationDate: {
     //     type: Date,
     //     required: true,

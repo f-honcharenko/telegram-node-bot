@@ -8,7 +8,9 @@ console.log(config.get('provider-token'));
 // CHARLIMITS: -1 = no limit, 
 class formsData {
     static firstForm = {
-        formName: 'titleForm',
+        formName: 'Тестовая форма.',
+        fromDescription: 'Тестовое описание формы.',
+        formPrice: 80 * 100,
         fields: [{
             fieldName: 'ФИО',
             type: 'text',
@@ -18,7 +20,7 @@ class formsData {
             type: 'document',
             charLimits: -1,
         }, {
-            fieldName: 'justnumber',
+            fieldName: 'Номер специального карточного счета',
             type: 'text',
             charLimits: 5,
         }]

@@ -17,12 +17,13 @@ function createFormScene() {
     })
     createFormScene.on('successful_payment', async (ctx, next) => { // ответ в случае положительной оплаты
         const userID = ctx.message.from.id;
-        const orderName = '[Заплатка. Заменить на название услуги]';
+        const orderName = ctx.session._data.formName;
         const orderDate = new Date(new Date().setHours(new Date().getHours() + 3)).toJSON();
         let orderCandidate = new order({
             "creatorTelegramID": userID,
             "title": orderName,
             "creationDate": orderDate,
+            '_data': ctx.session._data
         });
         orderCandidate.save((errS, resS) => {
             if (errS) {

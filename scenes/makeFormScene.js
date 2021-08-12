@@ -9,6 +9,7 @@ const keyboards = require('../keyboards');
 const formsData = require('../formsData');
 const user = require('../models/user');
 const order = require('../models/order');
+const invoices = require('../invoices');
 
 function makeFormScene() {
     const makeFormScene = new Scenes.BaseScene('makeFormScene');
@@ -17,7 +18,7 @@ function makeFormScene() {
     let currnetData = null;
     let formName = 'firstForm'
     makeFormScene.enter(async (ctx) => {
-        await ctx.reply("start makeFormScene scene");
+        console.log(formsData);
         await ctx.reply("Инициализация формы [ " + formsData[formName].formName + ']', keyboards.makeForm.oneTime().resize());
         await ctx.reply(`Введите [${formsData[formName].fields[fIndex].fieldName}]`);
 
@@ -27,13 +28,22 @@ function makeFormScene() {
         let type = null;
         switch (ctx.update.message.text) {
             case 'Подтвердить':
+                if (currnetData == null) {
+                    return ctx.reply('Заполните поле, прежде чем перейти далее!');
+                }
                 fIndex++;
                 let _temp = {};
                 _temp[formsData[formName].fields[fIndex - 1].fieldName] = currnetData;
+                currnetData = null;
                 _data.push(_temp);
                 if (formsData[formName].fields.length == fIndex) {
                     await ctx.reply('Форма заполнена!');
                     await ctx.reply(JSON.stringify(_data));
+                    ctx.session._data = {
+                        formName: formsData[formName].formName
+                    };
+                    fIndex = 0;
+                    await ctx.replyWithInvoice(invoices.getDocumentInvoice(ctx.from.id, formsData[formName].formName, formsData[formName].fromDescription, formsData[formName].formPrice));
                 } else {
                     return ctx.reply(`Отлично! Следуйщее поле : <b>${formsData[formName].fields[fIndex].fieldName}</b>`, {
                         parse_mode: 'html',
@@ -41,6 +51,9 @@ function makeFormScene() {
                     });
                 }
                 case 'Сбросить форму и вернуться':
+                    _data = [];
+                    fIndex = 0;
+                    currnetData = null;
                     return ctx.scene.enter('createFormScene');
                 default:
                     if (ctx.update.message.document) {
@@ -63,6 +76,45 @@ function makeFormScene() {
         }
 
     })
+    // makeFormScene.on('successful_payment', async (ctx, next) => { // ответ в случае положительной оплаты
+    //     const userID = ctx.message.from.id;
+    //     const orderName = ctx.session._data.formName;
+    //     const orderDate = new Date(new Date().setHours(new Date().getHours() + 3)).toJSON();
+    //     let orderCandidate = new order({
+    //         "creatorTelegramID": userID,
+    //         "title": orderName,
+    //         "creationDate": orderDate,
+    //         '_data': ctx.session._data
+    //     });
+    //     orderCandidate.save((errS, resS) => {
+    //         if (errS) {
+    //             console.log(errS);
+    //             return ctx.reply("Ошибка при сохранении платежа!");
+    //         }
+    //         if (resS) {
+    //             console.log(resS._id);
+    //             groupList.forEach((el) => {
+    //                 ctx.telegram.sendMessage(el,
+    //                     `Новый #заказ!\n<b>Услуга:</b> ${orderName} \n<b>Дата:</b> ${orderDate.slice(0,19).replace('T',' ').replace('-', '.').replace('-', '.')}\n<b>Оплачено:</b> ${(ctx.update.message.successful_payment.total_amount / 100) + ctx.update.message.successful_payment.currency}\n<b>Пользователь: </b> <a href="tg://user?id=${userID}">${ctx.message.from.first_name+' '+ctx.message.from.last_name}</a>\n<b>Исполнитель: </b> <a href="tg://user?id=0">Ожидается</a>`, {
+    //                         parse_mode: 'HTML',
+    //                         data: '123',
+    //                         reply_markup: {
+    //                             inline_keyboard: [
+    //                                 [{
+    //                                     text: "Берусь!",
+    //                                     callback_data: "getOrder_" + resS._id
+    //                                 }]
+    //                             ]
+    //                         }
+    //                     });
+
+    //             });
+    //         }
+    //     })
+
+    //     // console.log(ctx.update.message.successful_payment);
+    //     await ctx.reply('Оплата прошла успешно. Ваши данные переданы соответсвующим сотрудникам.')
+    // })
     return makeFormScene;
 }
 
