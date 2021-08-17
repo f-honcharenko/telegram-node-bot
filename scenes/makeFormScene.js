@@ -16,6 +16,7 @@ function makeFormScene() {
     let _data = [];
     let fIndex = 0;
     let currnetData = null;
+    let currnetType = null;
     let formName = 'firstForm'
     makeFormScene.enter(async (ctx) => {
         console.log(formsData);
@@ -32,15 +33,20 @@ function makeFormScene() {
                     return ctx.reply('Заполните поле, прежде чем перейти далее!');
                 }
                 fIndex++;
-                let _temp = {};
-                _temp[formsData[formName].fields[fIndex - 1].fieldName] = currnetData;
+                let _temp = {
+                    type: currnetType,
+                    data: currnetData,
+                    fieldName: formsData[formName].fields[fIndex - 1].fieldName
+                };
                 currnetData = null;
+                currnetType = null;
                 _data.push(_temp);
                 if (formsData[formName].fields.length == fIndex) {
                     await ctx.reply('Форма заполнена!');
                     await ctx.reply(JSON.stringify(_data));
                     ctx.session._data = {
-                        formName: formsData[formName].formName
+                        formName: formsData[formName].formName,
+                        fields: _data
                     };
                     fIndex = 0;
                     await ctx.replyWithInvoice(invoices.getDocumentInvoice(ctx.from.id, formsData[formName].formName, formsData[formName].fromDescription, formsData[formName].formPrice));
@@ -54,14 +60,26 @@ function makeFormScene() {
                     _data = [];
                     fIndex = 0;
                     currnetData = null;
+                    currnetType = null;
                     return ctx.scene.enter('createFormScene');
                 default:
                     if (ctx.update.message.document) {
+                        console.log(ctx.update.message.document);
                         type = 'document';
+                        currnetType = type;
                         currnetData = ctx.update.message.document.file_id;
                     } else if (ctx.update.message.text) {
                         type = 'text';
-                        currnetData = ctx.update.message.text;
+                        currnetType = type;
+                        if (formsData[formName].fields[fIndex].limits) {
+                            if ((ctx.update.message.text.length >= formsData[formName].fields[fIndex].limits.charMin) && (ctx.update.message.text.length <= formsData[formName].fields[fIndex].limits.charMax)) {
+                                currnetData = ctx.update.message.text;
+                            } else {
+                                return ctx.reply(`Это поле должно содержать от ${formsData[formName].fields[fIndex].limits.charMin} до ${formsData[formName].fields[fIndex].limits.charMax} символов.`);
+                            }
+                        } else {
+                            currnetData = ctx.update.message.text;
+                        }
                     }
                     if (type == null) {
                         return ctx.reply('Данный объект не поддерживается. Пожалуйста, отправьте файл, или текстовое сообщение');
@@ -76,45 +94,7 @@ function makeFormScene() {
         }
 
     })
-    // makeFormScene.on('successful_payment', async (ctx, next) => { // ответ в случае положительной оплаты
-    //     const userID = ctx.message.from.id;
-    //     const orderName = ctx.session._data.formName;
-    //     const orderDate = new Date(new Date().setHours(new Date().getHours() + 3)).toJSON();
-    //     let orderCandidate = new order({
-    //         "creatorTelegramID": userID,
-    //         "title": orderName,
-    //         "creationDate": orderDate,
-    //         '_data': ctx.session._data
-    //     });
-    //     orderCandidate.save((errS, resS) => {
-    //         if (errS) {
-    //             console.log(errS);
-    //             return ctx.reply("Ошибка при сохранении платежа!");
-    //         }
-    //         if (resS) {
-    //             console.log(resS._id);
-    //             groupList.forEach((el) => {
-    //                 ctx.telegram.sendMessage(el,
-    //                     `Новый #заказ!\n<b>Услуга:</b> ${orderName} \n<b>Дата:</b> ${orderDate.slice(0,19).replace('T',' ').replace('-', '.').replace('-', '.')}\n<b>Оплачено:</b> ${(ctx.update.message.successful_payment.total_amount / 100) + ctx.update.message.successful_payment.currency}\n<b>Пользователь: </b> <a href="tg://user?id=${userID}">${ctx.message.from.first_name+' '+ctx.message.from.last_name}</a>\n<b>Исполнитель: </b> <a href="tg://user?id=0">Ожидается</a>`, {
-    //                         parse_mode: 'HTML',
-    //                         data: '123',
-    //                         reply_markup: {
-    //                             inline_keyboard: [
-    //                                 [{
-    //                                     text: "Берусь!",
-    //                                     callback_data: "getOrder_" + resS._id
-    //                                 }]
-    //                             ]
-    //                         }
-    //                     });
 
-    //             });
-    //         }
-    //     })
-
-    //     // console.log(ctx.update.message.successful_payment);
-    //     await ctx.reply('Оплата прошла успешно. Ваши данные переданы соответсвующим сотрудникам.')
-    // })
     return makeFormScene;
 }
 

@@ -75,11 +75,9 @@ function workerFromsScene() {
                 });
                 break;
             case "Назад":
-                await ctx.scene.enter('workerScene');
-                break;
+                return ctx.scene.enter('workerScene');
             default:
-                await ctx.reply("Пожалуйста, используйте меню для навигации.");
-                break;
+                return ctx.reply("Пожалуйста, используйте меню для навигации.");
         }
     })
     workerFromsScene.action(/getOrderInfo_/, async (ctx) => {
@@ -104,8 +102,12 @@ function workerFromsScene() {
                                 callback_data: 'getComments_' + resF._id
                             }],
                             [{
-                                text: 'Прикрепленные файлы',
+                                text: 'Прикрепленные файлы(доп.)',
                                 callback_data: 'getFiles_' + resF._id
+                            }],
+                            [{
+                                text: 'Показать форму',
+                                callback_data: 'getForm_' + resF._id
                             }],
                         ]
                     },
@@ -117,7 +119,6 @@ function workerFromsScene() {
     });
     workerFromsScene.action(/getDoneOrderInfo_/, async (ctx) => {
         let candidateOrderId = ctx.update.callback_query.data.slice(17);
-        console.log(candidateOrderId);
         order.findOne({
             _id: candidateOrderId
         }, (errF, resF) => {
@@ -200,6 +201,59 @@ function workerFromsScene() {
                 resF.userFiles.forEach(async (fileID) => {
                     await ctx.replyWithSticker(fileID)
                 });
+            }
+        });
+
+    });
+    workerFromsScene.action(/getFileByIndex_/, async (ctx) => {
+        let comentData = ctx.update.callback_query.data.split('_');
+        order.findOne({
+            _id: comentData[1]
+        }, (errF, resF) => {
+            if (errF) {
+                return ctx.reply("Ошибка поиска Заказа в БД.");
+            }
+            if (resF) {
+                return ctx.replyWithSticker(resF._data[comentData[2]].data)
+            }
+        });
+
+    });
+    workerFromsScene.action(/getForm_/, async (ctx) => {
+        let keyboard = [];
+        let comentData = ctx.update.callback_query.data.split('_');
+        order.findOne({
+            _id: comentData[1]
+        }, (errF, resF) => {
+            if (errF) {
+                return ctx.reply("Ошибка поиска Заказа в БД.");
+            }
+            if (resF) {
+                let textRexponce = '';
+                resF._data.forEach((el, index) => {
+                    switch (el.type) {
+                        case 'text':
+                            textRexponce += '<b>' + el.fieldName + ': </b>' + el.data + '\n';
+                            break;
+                        case 'document':
+                            keyboard.push([{
+                                text: el.fieldName,
+                                callback_data: 'getFileByIndex_' + comentData[1] + '_' + index
+                            }]);
+                            break;
+                        default:
+                            ctx.reply('Ошибка определения типа поля формы!\n' + el.type);
+                            console.log(el);
+                            break;
+                    }
+                });
+                return ctx.reply(textRexponce, {
+                    reply_markup: {
+                        inline_keyboard: keyboard
+                    },
+                    parse_mode: 'HTML'
+                })
+                console.log(resF);
             }
         });
 

@@ -2,7 +2,6 @@ const {
     Markup
 } = require('telegraf');
 const config = require('config');
-console.log(config.get('provider-token'));
 class invoices {
     static getTestInvoice = (id) => {
         return {
