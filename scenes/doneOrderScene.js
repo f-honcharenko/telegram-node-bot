@@ -16,7 +16,7 @@ function doneOrderScene() {
         comment: null
     };
     doneOrderScene.enter(async (ctx) => {
-        return ctx.reply("Подготовка формы для ответа. Отправьте файлы и/или коментарий, которые будут отправлены заказчику.", keyboards.doneOrder);
+        return ctx.reply("Подготовка формы для завершения заказа. Отправьте файлы и/или коментарий, которые будут отправлены заказчику.", keyboards.doneOrder);
     })
 
     doneOrderScene.on('document', async (ctx) => {

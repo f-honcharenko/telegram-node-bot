@@ -11,10 +11,17 @@ const makeModerScene = require('./makeModerScene');
 const makeWorkerScene = require('./makeWorkerScene');
 const makeCommentScene = require('./makeCommentScene');
 const makeFormScene = require('./makeFormScene');
+const accountingScene = require('./accountingScene');
+const primaryScene = require('./primaryScene');
+const taxAccountingScene = require('./taxAccountingScene');
+
 
 
 const scenes = [
     userScene,
+    accountingScene,
+    taxAccountingScene,
+    primaryScene,
     moderScene,
     workerScene,
     adminScene,

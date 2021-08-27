@@ -9,16 +9,15 @@ const order = require('../models/order');
 const invoices = require('../invoices');
 const groupList = ["-1001519010099"];
 
-function createFormScene() {
-    const createFormScene = new Scenes.BaseScene('createFormScene');
+function primaryScene() {
+    const primaryScene = new Scenes.BaseScene('primaryScene');
 
-    createFormScene.enter(async (ctx) => {
-        await ctx.reply("Смена сцены", keyboards.createForm);
+    primaryScene.enter(async (ctx) => {
+        await ctx.reply("Смена сцены", keyboards.primary);
     })
-    createFormScene.on('successful_payment', async (ctx, next) => { // ответ в случае положительной оплаты
+    primaryScene.on('successful_payment', async (ctx, next) => { // ответ в случае положительной оплаты
         const userID = ctx.message.from.id;
         const orderName = ctx.session._data.formName;
-        console.log(ctx.update.message.successful_payment);
         const orderDate = new Date(new Date().setHours(new Date().getHours() + 3)).toJSON();
         let orderCandidate = new order({
             "_id": ctx.session._data.id,
@@ -55,23 +54,33 @@ function createFormScene() {
 
         await ctx.reply('Оплата прошла успешно. Ваши данные переданы соответсвующим сотрудникам.')
     })
-    createFormScene.on('message', async (ctx) => {
+    primaryScene.on('message', async (ctx) => {
         switch (ctx.message.text) {
-            case "Бухучет":
-                return ctx.scene.enter('accountingScene');
-            case "Первичка":
-                return ctx.scene.enter('primaryScene');
-            case "Налоговый учет":
-                return ctx.scene.enter('taxAccountingScene');
-                // case "":
-                // return ctx.scene.enter('');
-            case "Назад":
-                return ctx.scene.enter('userScene');
+            case 'Составление первички (ТТН)':
+                ctx.session.formID = '_005_MakePrimaryTTH';
+                ctx.scene.enter('makeFormScene');
+                break;
+            case 'Составление первички (СМР)':
+                ctx.session.formID = '_006_MakePrimaryCMR';
+                ctx.scene.enter('makeFormScene');
+                break;
+            case 'Составление договоров(стандарт)':
+                ctx.session.formID = '_007_MakeContractStandart';
+                ctx.scene.enter('makeFormScene');
+                break;
+            case 'Составление договоров(обработанный человеком)':
+                ctx.session.formID = '_008_MakeContractByHuman';
+                ctx.scene.enter('makeFormScene');
+                break;
+            case '':
+                break;
+            case 'Назад':
+                return ctx.scene.enter('createFormScene');
             default:
                 return ctx.reply("Пожалуйста, используйте меню для навигации.");
         }
     })
-    return createFormScene;
+    return primaryScene;
 }
 
-module.exports = createFormScene();
+module.exports = primaryScene();

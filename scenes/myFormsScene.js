@@ -5,7 +5,9 @@ const {
     Extra
 } = require('telegraf');
 const config = require('config');
+var LiqPay = require('../lib/liqpay');
 
+var liqpay = new LiqPay("sandbox_i4345377497", "sandbox_PiUftLMJwcbiYnHSDuCdZMJOqf22a030Vfb0FVQj");
 const keyboards = require('../keyboards');
 const order = require('../models/order');
 const groupList = config.get("telegram-group-array");
@@ -216,7 +218,7 @@ function myFromsScene() {
         order.updateOne({
             _id: candidateOrderId
         }, {
-            status: 'canceled'
+            status: 'pendingWorker'
         }, (errF, resF) => {
             if (errF) {
                 return ctx.reply("Ошибка поиска Заказа в БД.");
@@ -224,13 +226,23 @@ function myFromsScene() {
             if (resF) {
                 order.findOne({
                     _id: candidateOrderId
-                }, (errFo, resFo) => {
+                }, async (errFo, resFo) => {
                     if (errFo) {
                         return ctx.reply("Ошибка поиска исполнителя в БД.");
                     }
                     if (resFo) {
-                        if (resFo.worker) {
-                            ctx.telegram.sendMessage(resFo.worker, "Внимание! Один из ваших заказов был отменен пользователем.");
+                        if (!resFo.worker) {
+                            await liqpay.api("request", {
+                                "action": "refund",
+                                "version": "3",
+                                "order_id": candidateOrderId
+                            }, function (json) {
+                                console.log(json);
+                                ctx.telegram.sendMessage(resFo.worker, "Внимание! Один из ваших заказов был отменен пользователем.");
+                            });
+
+                        } else {
+                            ctx.reply('Вы не можете отменить заказ, так как он уже выполняется.');
                         }
                     }
                 })

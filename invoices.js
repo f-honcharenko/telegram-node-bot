@@ -40,8 +40,8 @@ class invoices {
 
     }
 
-    static getDocumentInvoice = (id, title = "TITLE", description = "description",
-        price = 0) => {
+    static getDocumentInvoice = (id, order_id, title = "TITLE", description = "description",
+        price = 159753) => {
         return {
             chat_id: id, // Уникальный идентификатор целевого чата или имя пользователя целевого канала
             provider_token: config.get('provider-token'), // токен выданный через бот @SberbankPaymentBot 
@@ -58,6 +58,9 @@ class invoices {
             photo_height: 250, // Длина фото
             payload: { // Полезные данные счета-фактуры, определенные ботом, 1–128 байт. Это не будет отображаться пользователю, используйте его для своих внутренних процессов.
                 service_name: "Составление пакета документов по ВЄД",
+            },
+            provider_data: {
+                order_id: order_id
             }
         }
 

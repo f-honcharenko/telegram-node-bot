@@ -17,6 +17,19 @@ class keyboards {
             Markup.button.callback("Сбросить форму и вернуться"),
         ],
     ]);
+    static accounting = Markup.keyboard([
+        [
+            Markup.button.callback("Составление проводок по операции"),
+            Markup.button.callback("Помощь в 1С"),
+        ],
+        [
+            Markup.button.callback("Разработка учетной политики"),
+            Markup.button.callback("Составление финансовой отчетности микро и малых предприятий"),
+        ],
+        [
+            Markup.button.callback("Назад"),
+        ]
+    ]);
     static makeForm2 = Markup.keyboard([
         [
             Markup.button.callback("Подтвердить"),
@@ -68,19 +81,40 @@ class keyboards {
     static createForm = Markup.keyboard([
         [
             Markup.button.callback("Бухучет"),
-            Markup.button.callback("Таможн. - Брок. услуги"),
+            Markup.button.callback("Таможн. - Брок. услуги(не доступно)"),
         ],
         [
             Markup.button.callback("Первичка"),
-            Markup.button.callback("Разное")
-        ],
-        [
             Markup.button.callback("Налоговый учет")
         ],
         [
             Markup.button.callback("Назад"),
         ]
     ]);
+
+    static taxAccounting = Markup.keyboard([
+        [
+            Markup.button.callback("Составление декларации"),
+        ],
+        [
+            Markup.button.callback("Назад"),
+        ]
+    ]);
+
+    static primary = Markup.keyboard([
+        [
+            Markup.button.callback("Составление первички (ТТН)"),
+            Markup.button.callback("Составление первички (СМР)"),
+        ],
+        [
+            Markup.button.callback("Составление договоров(стандарт)"),
+            Markup.button.callback("Составление договоров(обработанный человеком)")
+        ],
+        [
+            Markup.button.callback("Назад"),
+        ]
+    ]);
+
     static adminForm = Markup.keyboard([
         [
             Markup.button.callback("Рейтинг бухгалтеров"),

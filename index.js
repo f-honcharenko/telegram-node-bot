@@ -129,6 +129,7 @@ bot.action(/getOrder/, async (ctx) => {
                                                 entities: entities
                                             });
                                             ctx.telegram.sendMessage(res.creatorTelegramID, "Внимание! Ваш заказ принят в обработку одним из исполнителей.");
+                                            ctx.telegram.sendMessage(workerOBJ.id, "Внимание! Вы приняли новый заказ. ЗАказ перемещен в папку [Исполняемые]");
 
                                             // ctx.telegram.sendMessage(chatID, msgID, null, text.replace('Ожидается', workerOBJ.first_name + ' ' + workerOBJ.last_name), {
                                             //     entities: entities
@@ -174,7 +175,7 @@ bot.on("message", async (ctx) => {
             if (res) {
                 userType = res.type;
             } else {
-                return ctx.reply('Проищошла ошибка. Перезапустите бота.');
+                return ctx.reply('Произошла ошибка. Перезапустите бота.');
             }
             switch (userType) {
                 case "user":
@@ -198,7 +199,7 @@ bot.on("message", async (ctx) => {
         });
     }
 });
-// bot.telegram.setWebhook(config.get("webhook-link"));
+bot.telegram.setWebhook(config.get("webhook-link"));
 bot.launch();
 
 app.use(bodyParser.json());

@@ -17,11 +17,14 @@ function makeFormScene() {
     let fIndex = 0;
     let currnetData = null;
     let currnetType = null;
-    let formName = 'firstForm'
+    let formName = null;
     makeFormScene.enter(async (ctx) => {
-        console.log(formsData);
-        await ctx.reply("Инициализация формы [ " + formsData[formName].formName + ']', keyboards.makeForm.oneTime().resize());
-        await ctx.reply(`Введите [${formsData[formName].fields[fIndex].fieldName}]`);
+        formName = ctx.session.formID;
+        console.log(formName);
+        await ctx.reply("Инициализация формы [" + formsData[formName].formName + ']', keyboards.makeForm.oneTime().resize());
+        await ctx.reply(`<b>Первое поле:</b> ${formsData[formName].fields[fIndex].fieldName} ${formsData[formName].fields[fIndex].description?'\n<b>Дополнение: </b>'+formsData[formName].fields[fIndex].description:''}`, {
+            parse_mode: 'html',
+        });
 
     })
 
@@ -42,16 +45,17 @@ function makeFormScene() {
                 currnetType = null;
                 _data.push(_temp);
                 if (formsData[formName].fields.length == fIndex) {
-                    await ctx.reply('Форма заполнена!');
-                    await ctx.reply(JSON.stringify(_data));
+                    await ctx.reply('Форма заполнена и после оплаты будет передана сотруникам.');
+                    let voiderID = new user();
                     ctx.session._data = {
                         formName: formsData[formName].formName,
-                        fields: _data
+                        fields: _data,
+                        id: voiderID._id
                     };
                     fIndex = 0;
-                    await ctx.replyWithInvoice(invoices.getDocumentInvoice(ctx.from.id, formsData[formName].formName, formsData[formName].fromDescription, formsData[formName].formPrice));
+                    await ctx.replyWithInvoice(invoices.getDocumentInvoice(ctx.from.id, voiderID._id, formsData[formName].formName, formsData[formName].fromDescription, formsData[formName].formPrice));
                 } else {
-                    return ctx.reply(`Отлично! Следуйщее поле : <b>${formsData[formName].fields[fIndex].fieldName}</b>`, {
+                    return ctx.reply(`Отлично!\n<b>Следуйщее поле: </b>${formsData[formName].fields[fIndex].fieldName} ${formsData[formName].fields[fIndex].description?'\n<b>Дополнение: </b>'+formsData[formName].fields[fIndex].description:''}`, {
                         parse_mode: 'html',
                         ...keyboards.makeForm.oneTime().resize()
                     });
@@ -87,6 +91,7 @@ function makeFormScene() {
                         await ctx.reply(`Вы подтверждаете, что данные для поля [${formsData[formName].fields[fIndex].fieldName}] заполнены правильно?\n\nЕсли допустили ошибку, отправьте сообщение заново`, keyboards.makeForm2);
                         return sendData(ctx, currnetData, type)
                     } else {
+                        currnetData = null;
                         return ctx.reply(`Ошибка! Необходимо ${formsData[formName].fields[fIndex].type=="document"?"отправить документ":'отправить текстовое сообщение'}`);
 
                     }

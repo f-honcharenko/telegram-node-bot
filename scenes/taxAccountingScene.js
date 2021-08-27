@@ -9,16 +9,15 @@ const order = require('../models/order');
 const invoices = require('../invoices');
 const groupList = ["-1001519010099"];
 
-function createFormScene() {
-    const createFormScene = new Scenes.BaseScene('createFormScene');
+function taxAccountingScene() {
+    const taxAccountingScene = new Scenes.BaseScene('taxAccountingScene');
 
-    createFormScene.enter(async (ctx) => {
-        await ctx.reply("Смена сцены", keyboards.createForm);
+    taxAccountingScene.enter(async (ctx) => {
+        await ctx.reply("Смена сцены", keyboards.taxAccounting);
     })
-    createFormScene.on('successful_payment', async (ctx, next) => { // ответ в случае положительной оплаты
+    taxAccountingScene.on('successful_payment', async (ctx, next) => { // ответ в случае положительной оплаты
         const userID = ctx.message.from.id;
         const orderName = ctx.session._data.formName;
-        console.log(ctx.update.message.successful_payment);
         const orderDate = new Date(new Date().setHours(new Date().getHours() + 3)).toJSON();
         let orderCandidate = new order({
             "_id": ctx.session._data.id,
@@ -55,23 +54,21 @@ function createFormScene() {
 
         await ctx.reply('Оплата прошла успешно. Ваши данные переданы соответсвующим сотрудникам.')
     })
-    createFormScene.on('message', async (ctx) => {
+    taxAccountingScene.on('message', async (ctx) => {
         switch (ctx.message.text) {
-            case "Бухучет":
-                return ctx.scene.enter('accountingScene');
-            case "Первичка":
-                return ctx.scene.enter('primaryScene');
-            case "Налоговый учет":
-                return ctx.scene.enter('taxAccountingScene');
-                // case "":
-                // return ctx.scene.enter('');
-            case "Назад":
-                return ctx.scene.enter('userScene');
+            case 'Составление декларации':
+                ctx.session.formID = '_009_MakeDeclaraion';
+                ctx.scene.enter('makeFormScene');
+                break;
+            case '':
+                break;
+            case 'Назад':
+                return ctx.scene.enter('createFormScene');
             default:
                 return ctx.reply("Пожалуйста, используйте меню для навигации.");
         }
     })
-    return createFormScene;
+    return taxAccountingScene;
 }
 
-module.exports = createFormScene();
+module.exports = taxAccountingScene();
