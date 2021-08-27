@@ -1,7 +1,17 @@
 {
+<<<<<<< HEAD
     "token":"1873305865:AAH3GbbelwIts7HVjTYuVHeIH00OYf0Dp0I",
     "port":"8080",
     "webhook-link":"https://github-integration4-iwexs6eomq-uc.a.run.app/webhook",
     "GOOGLE_CLOUD_REGION":"europe-west1",
     "GOOGLE_CLOUD_PROJECT_ID":"node-telegram-bot-318510"
 } 
+=======
+    "token":"1819392979:AAEX0BSe9xhnLmXx9XC8P7_T553qG__9fVg",
+    "provider-token":"632593626:TEST:sandbox_i4345377497",
+    "port":"8080",
+    "webhook-link":"https://github-integration4-iwexs6eomq-uc.a.run.app/webhook",
+    "mongo-link":"mongodb+srv://admin:admin@cluster0.albqm.mongodb.net/nodeTelegramBot?retryWrites=true&w=majority",
+    "telegram-group-array": ["-1001519010099"]
+}
+>>>>>>> dev
