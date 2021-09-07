@@ -12,7 +12,7 @@ function userScene() {
     const userScene = new Scenes.BaseScene('userScene');
 
     userScene.enter(async (ctx) => {
-        await ctx.reply("start USER scene", keyboards.start);
+        await ctx.reply("Главное меню: ", keyboards.start);
         return user.findOne({
             telegramID: ctx.update.message.from.id
         }, async (errFo, resFo) => {

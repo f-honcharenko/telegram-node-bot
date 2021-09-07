@@ -13,7 +13,7 @@ function workerScene() {
     const workerScene = new Scenes.BaseScene('workerScene');
 
     workerScene.enter(async (ctx) => {
-        await ctx.reply("start Worker scene", keyboards.startWorker);
+        await ctx.reply("Меню исполнителя:", keyboards.startWorker);
         return user.findOne({
             telegramID: ctx.update.message.from.id
         }, async (errFo, resFo) => {

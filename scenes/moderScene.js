@@ -13,7 +13,7 @@ function moderScene() {
     const moderScene = new Scenes.BaseScene('moderScene');
 
     moderScene.enter(async (ctx) => {
-        await ctx.reply("start MODER scene", keyboards.startModer);
+        await ctx.reply("Модер-Панель", keyboards.startModer);
         return user.findOne({
             telegramID: ctx.update.message.from.id
         }, async (errFo, resFo) => {

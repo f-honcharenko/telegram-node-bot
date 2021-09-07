@@ -7,15 +7,16 @@ const {
 const keyboards = require('../keyboards');
 const order = require('../models/order');
 const invoices = require('../invoices');
-const groupList = ["-1001519010099"];
+const config = require('config');
+const groupList = config.get("telegram-group-array");
 
-function taxAccountingScene() {
-    const taxAccountingScene = new Scenes.BaseScene('taxAccountingScene');
+function customsBrokerServicesScene() {
+    const customsBrokerServicesScene = new Scenes.BaseScene('customsBrokerServicesScene');
 
-    taxAccountingScene.enter(async (ctx) => {
-        await ctx.reply("Выберите услугу: ", keyboards.taxAccounting);
+    customsBrokerServicesScene.enter(async (ctx) => {
+        await ctx.reply("Выберите услугу:", keyboards.customsBrokerServices);
     })
-    taxAccountingScene.on('successful_payment', async (ctx, next) => { // ответ в случае положительной оплаты
+    customsBrokerServicesScene.on('successful_payment', async (ctx, next) => { // ответ в случае положительной оплаты
         const userID = ctx.message.from.id;
         const orderName = ctx.session._data.formName;
         const orderDate = new Date(new Date().setHours(new Date().getHours() + 3)).toJSON();
@@ -54,17 +55,39 @@ function taxAccountingScene() {
 
         await ctx.reply('Оплата прошла успешно. Ваши данные переданы соответсвующим сотрудникам.')
     })
-    taxAccountingScene.on('message', async (ctx) => {
+    customsBrokerServicesScene.on('message', async (ctx) => {
         switch (ctx.message.text) {
-            case 'Составление декларации':
-                ctx.session.formID = '_009_MakeDeclaraion';
+            case 'Аккредитация в таможенных органах':
+                ctx.session.formID = '_014_AccreditationCustomsAuthorities';
                 ctx.scene.enter('makeFormScene');
                 break;
-            case 'Составление другой отчетности':
-                ctx.scene.enter('makeOtherReportingScene');
+            case 'Составление пакета документов по ВЭД контракту':
+                ctx.session.formID = '_015_WEDcontract';
+                ctx.scene.enter('makeFormScene');
                 break;
-            case 'Разблокировка налоговых накладных':
-                ctx.scene.enter('unlockingTaxInvoicesScene');
+            case 'Аккредитация в Держпродспоживслужбе':
+                ctx.session.formID = '_016_AccredititionInDerjProdService';
+                ctx.scene.enter('makeFormScene');
+                break;
+            case 'Оформление импорта':
+                ctx.session.formID = '_017_MakeImport';
+                ctx.scene.enter('makeFormScene');
+                break;
+            case 'Оформление экспорта':
+                ctx.session.formID = '_018_MakeExport"';
+                ctx.scene.enter('makeFormScene');
+                break;
+            case 'Оформление евроблях':
+                ctx.session.formID = '_019_MakeEurobies"';
+                ctx.scene.enter('makeFormScene');
+                break;
+            case 'Оформление посылок':
+                ctx.session.formID = '_020_MakePackage"';
+                ctx.scene.enter('makeFormScene');
+                break;
+            case 'Получение сертификата ЕВРО-1':
+                ctx.session.formID = '_021_DiplomaEVRO1"';
+                ctx.scene.enter('makeFormScene');
                 break;
             case 'Назад':
                 return ctx.scene.enter('createFormScene');
@@ -72,7 +95,7 @@ function taxAccountingScene() {
                 return ctx.reply("Пожалуйста, используйте меню для навигации.");
         }
     })
-    return taxAccountingScene;
+    return customsBrokerServicesScene;
 }
 
-module.exports = taxAccountingScene();
+module.exports = customsBrokerServicesScene();

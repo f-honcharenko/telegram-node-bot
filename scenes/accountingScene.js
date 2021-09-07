@@ -6,14 +6,15 @@ const {
 } = require('telegraf');
 const keyboards = require('../keyboards');
 const order = require('../models/order');
+const config = require('config');
 const invoices = require('../invoices');
-const groupList = ["-1001519010099"];
+const groupList = config.get("telegram-group-array");
 
 function accountingScene() {
     const accountingScene = new Scenes.BaseScene('accountingScene');
 
     accountingScene.enter(async (ctx) => {
-        await ctx.reply("Смена сцены", keyboards.accounting);
+        await ctx.reply("Выберите услугу: ", keyboards.accounting);
     })
     accountingScene.on('successful_payment', async (ctx, next) => { // ответ в случае положительной оплаты
         const userID = ctx.message.from.id;

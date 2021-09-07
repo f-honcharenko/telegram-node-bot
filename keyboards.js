@@ -3,14 +3,40 @@ const {
 } = require('telegraf');
 
 class keyboards {
+
+    static consultation = Markup.keyboard([
+        [
+            Markup.button.callback("ИДС"),
+            Markup.button.callback("Прибыль"),
+        ],
+        [
+            Markup.button.callback("Физлица-предприниматели"),
+            Markup.button.callback("РРО и касса"),
+        ],
+        [
+            Markup.button.callback("Зарплата и кадры"),
+            Markup.button.callback("Бухгалтерский учет"),
+        ],
+        [
+            Markup.button.callback("ВЭД"),
+            Markup.button.callback("Документация"),
+        ],
+        [
+            Markup.button.callback("Лицензионная деятельность"),
+        ],
+
+        [
+            Markup.button.callback("Назад"),
+        ]
+    ]);
     static start = Markup.keyboard([
         [
             Markup.button.callback("Создать форму"),
             Markup.button.callback("Мои формы"),
         ],
-        [
-            Markup.button.callback("Консультации"),
-        ]
+        // [
+        //     Markup.button.callback("Консультации"),
+        // ]
     ]);
     static makeForm = Markup.keyboard([
         [
@@ -81,11 +107,85 @@ class keyboards {
     static createForm = Markup.keyboard([
         [
             Markup.button.callback("Бухучет"),
-            Markup.button.callback("Таможн. - Брок. услуги(не доступно)"),
+            Markup.button.callback("Таможн. - Брок. услуги"),
         ],
         [
             Markup.button.callback("Первичка"),
             Markup.button.callback("Налоговый учет")
+        ],
+        [
+            Markup.button.callback("Консультации"),
+        ],
+        [
+            Markup.button.callback("Назад"),
+        ]
+    ]);
+
+    static mainConsultations = Markup.keyboard([
+        [
+            Markup.button.callback("НДС"),
+            Markup.button.callback("Прибыль"),
+        ],
+        [
+            Markup.button.callback("Физлица-предприниматели"),
+            Markup.button.callback("РРО и касса")
+        ],
+        [
+            Markup.button.callback("Зарплата и кадры"),
+            Markup.button.callback("Бухгалтерский учет")
+        ],
+        [
+            Markup.button.callback("ВЭД"),
+            Markup.button.callback("Документация")
+        ],
+        [
+            Markup.button.callback("Лицензионная деятельность"),
+            Markup.button.callback("Назад"),
+        ]
+    ]);
+    static customsBrokerServices = Markup.keyboard([
+        [
+            Markup.button.callback("Аккредитация в таможенных органах"),
+            Markup.button.callback("Составление пакета документов по ВЭД контракту"),
+        ],
+        [
+            Markup.button.callback("Аккредитация в Держпродспоживслужбе"),
+            Markup.button.callback("Получение сертификата ЕВРО-1")
+        ],
+        [
+            Markup.button.callback("Оформление импорта"),
+            Markup.button.callback("Оформление экспорта")
+        ],
+        [
+            Markup.button.callback("Оформление евроблях"),
+            Markup.button.callback("Оформление посылок")
+        ],
+        [
+            Markup.button.callback("Назад"),
+        ]
+    ]);
+
+    static makeOtherReporting = Markup.keyboard([
+        [
+            Markup.button.callback("Консолидированная отчетность по ЗП (до 30сотр.)"),
+        ],
+        [
+            Markup.button.callback("Консолидированная отчетность по ЗП (30-100сотр.)"),
+        ],
+        [
+            Markup.button.callback("Консолидированная отчетность по ЗП (от 100сотр.)"),
+        ],
+        [
+            Markup.button.callback("Отчеты единщиков по ЕСВ и 4ДФ"),
+        ],
+        [
+            Markup.button.callback("Назад"),
+        ]
+    ]);
+    static unlockingTaxInvoices = Markup.keyboard([
+        [
+            Markup.button.callback("Подготовка документов"),
+            Markup.button.callback("Составление жалобы"),
         ],
         [
             Markup.button.callback("Назад"),
@@ -95,6 +195,10 @@ class keyboards {
     static taxAccounting = Markup.keyboard([
         [
             Markup.button.callback("Составление декларации"),
+            Markup.button.callback("Составление другой отчетности"),
+        ],
+        [
+            Markup.button.callback("Разблокировка налоговых накладных"),
         ],
         [
             Markup.button.callback("Назад"),

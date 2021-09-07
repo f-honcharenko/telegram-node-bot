@@ -1,6 +1,8 @@
 {
-    "token":"1873305865:AAF1O0aOV19fjC0BQ7xHrQgZ-j3IycY3AnY",
+    "token":"1819392979:AAEX0BSe9xhnLmXx9XC8P7_T553qG__9fVg",
+    "provider-token":"632593626:TEST:sandbox_i4345377497",
     "port":"8080",
-    "webhook-link":"https://github-integration4-iwexs6eomq-uc.a.run.app/webhook",
-    "mongo-link":"mongodb+srv://admin:admin@cluster0.albqm.mongodb.net/nodeTelegramBot?retryWrites=true&w=majority"
+    "webhook-link":"https://node-telegram-pre-deploy.appspot.com/webhook",
+    "mongo-link":"mongodb+srv://admin:admin@cluster0.albqm.mongodb.net/nodeTelegramBot?retryWrites=true&w=majority",
+    "telegram-group-array": ["-1001519010099"]
 }

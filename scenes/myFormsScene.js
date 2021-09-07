@@ -16,7 +16,7 @@ function myFromsScene() {
     const myFromsScene = new Scenes.BaseScene('myFromsScene');
 
     myFromsScene.enter(async (ctx) => {
-        await ctx.reply("Смена сцены", keyboards.myForms);
+        await ctx.reply("Какие именно формы показать?", keyboards.myForms);
     })
 
     myFromsScene.on('message', async (ctx) => {
@@ -215,10 +215,8 @@ function myFromsScene() {
     myFromsScene.action(/cancleOrderConfirm_/, async (ctx) => {
         let candidateOrderId = ctx.update.callback_query.data.slice(19);
         console.log();
-        order.updateOne({
+        order.findOne({
             _id: candidateOrderId
-        }, {
-            status: 'pendingWorker'
         }, (errF, resF) => {
             if (errF) {
                 return ctx.reply("Ошибка поиска Заказа в БД.");
@@ -238,7 +236,22 @@ function myFromsScene() {
                                 "order_id": candidateOrderId
                             }, function (json) {
                                 console.log(json);
-                                ctx.telegram.sendMessage(resFo.worker, "Внимание! Один из ваших заказов был отменен пользователем.");
+                                if (json.status == "reversed") {
+                                    order.updateOne({
+                                        _id: candidateOrderId
+                                    }, {
+                                        status: 'canceled'
+                                    }, async (errUo1, resUo1) => {
+                                        if (errUo1) {
+                                            return ctx.reply("Ошибка поиска исполнителя в БД.");
+                                        }
+                                        if (resUo1) {
+                                            ctx.reply('Возварт успешно обработан. Ожидайте возврата срдеств в течении нескольких рабочих дней.');
+                                        }
+                                    });
+                                } else if (json.status == "error") {
+                                    ctx.reply('Ошибка. Вероятно платеж еще обрабывтается, или же уже возвращен. Попробуйте позже, или обратитесь к администратору, если ошибка не исчезает.');
+                                }
                             });
 
                         } else {
@@ -246,8 +259,6 @@ function myFromsScene() {
                         }
                     }
                 })
-
-                return ctx.reply("Заказ успешно отменен!");
             }
         });
 

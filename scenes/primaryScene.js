@@ -13,7 +13,7 @@ function primaryScene() {
     const primaryScene = new Scenes.BaseScene('primaryScene');
 
     primaryScene.enter(async (ctx) => {
-        await ctx.reply("Смена сцены", keyboards.primary);
+        await ctx.reply("Выберите подтип услуги", keyboards.primary);
     })
     primaryScene.on('successful_payment', async (ctx, next) => { // ответ в случае положительной оплаты
         const userID = ctx.message.from.id;

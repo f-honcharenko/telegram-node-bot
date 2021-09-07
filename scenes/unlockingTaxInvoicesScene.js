@@ -9,13 +9,13 @@ const order = require('../models/order');
 const invoices = require('../invoices');
 const groupList = ["-1001519010099"];
 
-function taxAccountingScene() {
-    const taxAccountingScene = new Scenes.BaseScene('taxAccountingScene');
+function unlockingTaxInvoicesScene() {
+    const unlockingTaxInvoicesScene = new Scenes.BaseScene('unlockingTaxInvoicesScene');
 
-    taxAccountingScene.enter(async (ctx) => {
-        await ctx.reply("Выберите услугу: ", keyboards.taxAccounting);
+    unlockingTaxInvoicesScene.enter(async (ctx) => {
+        await ctx.reply("Выберите подтип усулги: ", keyboards.unlockingTaxInvoices);
     })
-    taxAccountingScene.on('successful_payment', async (ctx, next) => { // ответ в случае положительной оплаты
+    unlockingTaxInvoicesScene.on('successful_payment', async (ctx, next) => { // ответ в случае положительной оплаты
         const userID = ctx.message.from.id;
         const orderName = ctx.session._data.formName;
         const orderDate = new Date(new Date().setHours(new Date().getHours() + 3)).toJSON();
@@ -54,17 +54,18 @@ function taxAccountingScene() {
 
         await ctx.reply('Оплата прошла успешно. Ваши данные переданы соответсвующим сотрудникам.')
     })
-    taxAccountingScene.on('message', async (ctx) => {
+    unlockingTaxInvoicesScene.on('message', async (ctx) => {
         switch (ctx.message.text) {
-            case 'Составление декларации':
-                ctx.session.formID = '_009_MakeDeclaraion';
+            case 'Подготовка документов':
+                ctx.session.formID = '_031_PreparingDocument';
                 ctx.scene.enter('makeFormScene');
                 break;
-            case 'Составление другой отчетности':
-                ctx.scene.enter('makeOtherReportingScene');
+            case 'Составление жалобы':
+                ctx.session.formID = '_032_MakeReport';
+                ctx.scene.enter('makeFormScene');
                 break;
-            case 'Разблокировка налоговых накладных':
-                ctx.scene.enter('unlockingTaxInvoicesScene');
+
+            case '':
                 break;
             case 'Назад':
                 return ctx.scene.enter('createFormScene');
@@ -72,7 +73,7 @@ function taxAccountingScene() {
                 return ctx.reply("Пожалуйста, используйте меню для навигации.");
         }
     })
-    return taxAccountingScene;
+    return unlockingTaxInvoicesScene;
 }
 
-module.exports = taxAccountingScene();
+module.exports = unlockingTaxInvoicesScene();

@@ -7,13 +7,14 @@ const {
 const keyboards = require('../keyboards');
 const order = require('../models/order');
 const invoices = require('../invoices');
-const groupList = ["-1001519010099"];
+const config = require('config');
+const groupList = config.get("telegram-group-array");
 
 function createFormScene() {
     const createFormScene = new Scenes.BaseScene('createFormScene');
 
     createFormScene.enter(async (ctx) => {
-        await ctx.reply("Смена сцены", keyboards.createForm);
+        await ctx.reply("Выберите направление: ", keyboards.createForm);
     })
     createFormScene.on('successful_payment', async (ctx, next) => { // ответ в случае положительной оплаты
         const userID = ctx.message.from.id;
@@ -63,6 +64,11 @@ function createFormScene() {
                 return ctx.scene.enter('primaryScene');
             case "Налоговый учет":
                 return ctx.scene.enter('taxAccountingScene');
+            case "Таможн. - Брок. услуги":
+                return ctx.scene.enter('customsBrokerServicesScene');
+            case "Консультации":
+                return ctx.scene.enter('mainConsultationsScene');
+
                 // case "":
                 // return ctx.scene.enter('');
             case "Назад":

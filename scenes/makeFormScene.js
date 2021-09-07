@@ -45,7 +45,7 @@ function makeFormScene() {
                 currnetType = null;
                 _data.push(_temp);
                 if (formsData[formName].fields.length == fIndex) {
-                    await ctx.reply('Форма заполнена и после оплаты будет передана сотруникам.');
+                    await ctx.reply('Форма заполнена и после оплаты будет передана сотруникам. Пожалуйста, оплатите в течении 5-ти минут, иначе данная форма не будет действительна.');
                     let voiderID = new user();
                     ctx.session._data = {
                         formName: formsData[formName].formName,

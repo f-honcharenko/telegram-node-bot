@@ -13,7 +13,7 @@ function adminScene() {
     const adminScene = new Scenes.BaseScene('adminScene');
 
     adminScene.enter(async (ctx) => {
-        await ctx.reply("start ADMIN scene", keyboards.adminForm);
+        await ctx.reply("Админпанель: ", keyboards.adminForm);
         return user.findOne({
             telegramID: ctx.update.message.from.id
         }, async (errFo, resFo) => {

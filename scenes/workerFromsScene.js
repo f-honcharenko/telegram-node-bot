@@ -13,7 +13,7 @@ function workerFromsScene() {
     const workerFromsScene = new Scenes.BaseScene('workerFromsScene');
 
     workerFromsScene.enter(async (ctx) => {
-        return ctx.reply("start workerFromsScene scene", keyboards.workerForms);
+        return ctx.reply("Какие именно формы показать?", keyboards.workerForms);
     })
 
     workerFromsScene.on('message', async (ctx) => {

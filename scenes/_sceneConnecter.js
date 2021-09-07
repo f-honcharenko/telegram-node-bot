@@ -14,12 +14,23 @@ const makeFormScene = require('./makeFormScene');
 const accountingScene = require('./accountingScene');
 const primaryScene = require('./primaryScene');
 const taxAccountingScene = require('./taxAccountingScene');
+const consultationScene = require('./consultationScene');
+const makeOtherReportingScene = require('./makeOtherReportingScene');
+const unlockingTaxInvoicesScene = require('./unlockingTaxInvoicesScene');
+const customsBrokerServicesScene = require('./customsBrokerServicesScene');
+const mainConsultationsScene = require('./mainConsultationsScene');
+
 
 
 
 const scenes = [
     userScene,
+    consultationScene,
     accountingScene,
+    mainConsultationsScene,
+    customsBrokerServicesScene,
+    unlockingTaxInvoicesScene,
+    makeOtherReportingScene,
     taxAccountingScene,
     primaryScene,
     moderScene,

@@ -7,15 +7,16 @@ const {
 const keyboards = require('../keyboards');
 const order = require('../models/order');
 const invoices = require('../invoices');
-const groupList = ["-1001519010099"];
+const config = require('config');
+const groupList = config.get("telegram-group-array");
 
-function taxAccountingScene() {
-    const taxAccountingScene = new Scenes.BaseScene('taxAccountingScene');
+function mainConsultationsScene() {
+    const mainConsultationsScene = new Scenes.BaseScene('mainConsultationsScene');
 
-    taxAccountingScene.enter(async (ctx) => {
-        await ctx.reply("Выберите услугу: ", keyboards.taxAccounting);
+    mainConsultationsScene.enter(async (ctx) => {
+        await ctx.reply("Выберите тему консультации: ", keyboards.mainConsultations);
     })
-    taxAccountingScene.on('successful_payment', async (ctx, next) => { // ответ в случае положительной оплаты
+    mainConsultationsScene.on('successful_payment', async (ctx, next) => { // ответ в случае положительной оплаты
         const userID = ctx.message.from.id;
         const orderName = ctx.session._data.formName;
         const orderDate = new Date(new Date().setHours(new Date().getHours() + 3)).toJSON();
@@ -54,17 +55,46 @@ function taxAccountingScene() {
 
         await ctx.reply('Оплата прошла успешно. Ваши данные переданы соответсвующим сотрудникам.')
     })
-    taxAccountingScene.on('message', async (ctx) => {
+    mainConsultationsScene.on('message', async (ctx) => {
         switch (ctx.message.text) {
-            case 'Составление декларации':
-                ctx.session.formID = '_009_MakeDeclaraion';
+            case 'НДС':
+                ctx.session.formID = '_022_NDS';
                 ctx.scene.enter('makeFormScene');
                 break;
-            case 'Составление другой отчетности':
-                ctx.scene.enter('makeOtherReportingScene');
+            case 'Прибыль':
+                ctx.session.formID = '_023_Profit';
+                ctx.scene.enter('makeFormScene');
                 break;
-            case 'Разблокировка налоговых накладных':
-                ctx.scene.enter('unlockingTaxInvoicesScene');
+            case 'Физлица-предприниматели':
+                ctx.session.formID = '_024_IndividualEntrepreneurs';
+                ctx.scene.enter('makeFormScene');
+                break;
+            case 'РРО и касса':
+                ctx.session.formID = '_025_PPO';
+                ctx.scene.enter('makeFormScene');
+                break;
+            case 'Зарплата и кадры':
+                ctx.session.formID = '_026_SalaryPersonnel';
+                ctx.scene.enter('makeFormScene');
+                break;
+            case 'Бухгалтерский учет':
+                ctx.session.formID = '_027_Accounting';
+                ctx.scene.enter('makeFormScene');
+                break;
+            case 'ВЭД':
+                ctx.session.formID = '_028_VED';
+                ctx.scene.enter('makeFormScene');
+                break;
+            case 'Документация':
+                ctx.session.formID = '_029_Documentation';
+                ctx.scene.enter('makeFormScene');
+                break;
+            case 'Лицензионная деятельность':
+                ctx.session.formID = '_030_LicensedActivity';
+                ctx.scene.enter('makeFormScene');
+                break;
+
+            case '':
                 break;
             case 'Назад':
                 return ctx.scene.enter('createFormScene');
@@ -72,7 +102,7 @@ function taxAccountingScene() {
                 return ctx.reply("Пожалуйста, используйте меню для навигации.");
         }
     })
-    return taxAccountingScene;
+    return mainConsultationsScene;
 }
 
-module.exports = taxAccountingScene();
+module.exports = mainConsultationsScene();

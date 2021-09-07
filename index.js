@@ -59,22 +59,22 @@ bot.start(async (ctx) => {
                 ctx.reply("Создана новая запись в БД");
             });
         }
-        ctx.reply("[Отладка] ID: " + userID + "\n[Отладка] type: " + userType);
+        // ctx.reply("[Отладка] ID: " + userID + "\n[Отладка] type: " + userType);
         switch (userType) {
             case "user":
-                ctx.reply("Тип учетной записи: USER");
+                // ctx.reply("Тип учетной записи: USER");
                 ctx.scene.enter("userScene");
                 break;
             case "admin":
-                ctx.reply("Тип учетной записи: ADMIN");
+                // ctx.reply("Тип учетной записи: ADMIN");
                 ctx.scene.enter("adminScene");
                 break;
             case "worker":
-                ctx.reply("Тип учетной записи: WORKER");
+                // ctx.reply("Тип учетной записи: WORKER");
                 ctx.scene.enter("workerScene");
                 break;
             case "moder":
-                ctx.reply("Тип учетной записи: MODER");
+                // ctx.reply("Тип учетной записи: MODER");
                 ctx.scene.enter("moderScene");
                 break;
         }
@@ -179,19 +179,19 @@ bot.on("message", async (ctx) => {
             }
             switch (userType) {
                 case "user":
-                    ctx.reply("Тип учетной записи: USER");
+                    // ctx.reply("Тип учетной записи: USER");
                     ctx.scene.enter("userScene");
                     break;
                 case "admin":
-                    ctx.reply("Тип учетной записи: ADMIN");
+                    // ctx.reply("Тип учетной записи: ADMIN");
                     ctx.scene.enter("adminScene");
                     break;
                 case "worker":
-                    ctx.reply("Тип учетной записи: WORKER");
+                    // ctx.reply("Тип учетной записи: WORKER");
                     ctx.scene.enter("workerScene");
                     break;
                 case "moder":
-                    ctx.reply("Тип учетной записи: MODER");
+                    // ctx.reply("Тип учетной записи: MODER");
                     ctx.scene.enter("moderScene");
                     break;
             }
@@ -199,7 +199,7 @@ bot.on("message", async (ctx) => {
         });
     }
 });
-bot.telegram.setWebhook(config.get("webhook-link"));
+// bot.telegram.setWebhook(config.get("webhook-link"));
 bot.launch();
 
 app.use(bodyParser.json());
