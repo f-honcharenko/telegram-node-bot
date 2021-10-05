@@ -47,8 +47,8 @@ app.post('/api/webhook', (req, res) => {
     bot.handleUpdate(req.body, res);
 })
 
-app.get('/api/ping', (req, res) => {
-    res.send('Pong!');
+app.post('/api/ping', (req, res) => {
+    res.json(req.body).status(418);
 })
 
 app.get('/webhook', (req, res) => {
@@ -56,6 +56,7 @@ app.get('/webhook', (req, res) => {
         msg: 'webhook alright'
     });
 })
+
 //EXPRESS SERVER
 app.listen(port, () => {
     console.log(`Example app listening at port: ${port}`)
