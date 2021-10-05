@@ -343,3 +343,4 @@ function startBot() {
     // });
     // bot.telegram.setWebhook(config.get("webhook-link"));
 }
+module.exports = app;
