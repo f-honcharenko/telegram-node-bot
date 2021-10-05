@@ -41,7 +41,7 @@ app.use(bodyParser.urlencoded({
     extended: false
 }));
 
-app.post('/webhook', (req, res) => {
+app.post('/api/webhook', (req, res) => {
     console.log('REQUEST');
     console.log(req.body);
     bot.handleUpdate(req.body, res);
