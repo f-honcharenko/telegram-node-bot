@@ -337,7 +337,7 @@ function startBot() {
                 // console.log(error);
             });
     }, 1000 * 60 * 5);
-    // bot.launch();
+    bot.launch();
     // console.log(os.tmpdir());
     // fs.readFile(os.tmpdir()+"/example_db.json", "utf8", 
     //             function(error,data){
