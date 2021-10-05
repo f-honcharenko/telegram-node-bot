@@ -46,6 +46,9 @@ app.post('/webhook', (req, res) => {
     bot.handleUpdate(req.body, res);
 })
 
+app.get('/ping', (req, res) => {
+    res.send('Pong!');
+})
 
 app.get('/webhook', (req, res) => {
     console.log('REQUEST');
