@@ -7,7 +7,7 @@ const {
     Scenes,
     session
 } = require('telegraf')
-const config = require('config');
+const config = require('./config.json');
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
@@ -20,7 +20,8 @@ const LocalSession = require('telegraf-session-local')
 const MongoSession = require('telegraf-session-mongodb').session;
 //MODELS
 
-console.log("test");
+
+
 const sceneConnecter = require('./scenes/_sceneConnecter');
 const user = require('./models/user');
 const order = require('./models/order');
@@ -28,8 +29,8 @@ const keyboards = require('./keyboards');
 
 //CONSTS
 const stage = new Scenes.Stage(sceneConnecter);
-const bot = new Telegraf(config.get("token"));
-const port = process.env.PORT || config.get("port");
+const bot = new Telegraf(config.token);
+const port = process.env.PORT || config.port;
 const app = express();
 
 
@@ -58,7 +59,7 @@ app.get('/webhook', (req, res) => {
 //EXPRESS SERVER
 app.listen(port, () => {
     console.log(`Example app listening at port: ${port}`)
-    mongoose.connect(config.get("mongo-link"), {
+    mongoose.connect(config.mongoLink, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
         useCreateIndex: true,
@@ -81,7 +82,7 @@ app.listen(port, () => {
             // session.setup().then(() => {
             //     bot.use(session.middleware);
             // });
-            bot.telegram.setWebhook(config.get("webhook-link"));
+            bot.telegram.setWebhook(config.webhookLink);
             startBot();
         }
     });
@@ -312,8 +313,8 @@ function startBot() {
             });
         }
     });
-    console.log("WEBHOOK-LINK: " + config.get("webhook-link"));
-    console.log("WEBHOOK-TOKEN: " + config.get("token"));
+    console.log("WEBHOOK-LINK: " + config.webhookLink);
+    console.log("WEBHOOK-TOKEN: " + config.token);
     bot.telegram.sendMessage(855986991, "Test2");
     // console.log(bot.telegram.options);
     let index_Interval = 0;
