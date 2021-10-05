@@ -88,9 +88,9 @@ function startBot() {
     // bot.use((new LocalSession({
     //     database: os.tmpdir()+'/example_db.json'
     // })).middleware())
-    stage.command('mainmenu', async (ctx, next)=>{
+    stage.command('mainmenu', async (ctx, next) => {
         let userID = ctx.message.from.id;
-    await user.findOne({
+        await user.findOne({
             "telegramID": userID
         }, {}, (err, res) => {
             if (err) return ctx.reply(err);
@@ -230,10 +230,10 @@ function startBot() {
                                                     if (entities[i].type == "text_link") {
                                                         entities[i].type = 'text_mention';
                                                         entities[i].user = workerOBJ;
-                                                        entities[i].length = 1 + workerOBJ.first_name?workerOBJ.first_name.length:0 + workerOBJ.last_name?workerOBJ.last_name.length:0 ;
+                                                        entities[i].length = 1 + workerOBJ.first_name ? workerOBJ.first_name.length : 0 + workerOBJ.last_name ? workerOBJ.last_name.length : 0;
                                                     }
                                                 }
-                                                ctx.telegram.editMessageText(chatID, msgID, null, text.replace('Ожидается', workerOBJ.first_name?workerOBJ.first_name:'' + ' ' + workerOBJ.last_name?workerOBJ.last_name:''), {
+                                                ctx.telegram.editMessageText(chatID, msgID, null, text.replace('Ожидается', workerOBJ.first_name ? workerOBJ.first_name : '' + ' ' + workerOBJ.last_name ? workerOBJ.last_name : ''), {
                                                     entities: entities
                                                 });
                                                 // ctx.reply();
@@ -311,31 +311,31 @@ function startBot() {
     });
     console.log("WEBHOOK-LINK: " + config.get("webhook-link"));
     console.log("WEBHOOK-TOKEN: " + config.get("token"));
-        bot.telegram.sendMessage(855986991, "Test");
+    bot.telegram.sendMessage(855986991, "Test2");
     // console.log(bot.telegram.options);
     let index_Interval = 0;
-    setInterval(()=>{
+    setInterval(() => {
         // bot.telegram.sendMessage(855986991, "Index interval(5 min): "+index_Interval);
         index_Interval++;
-        
+
 
         axios.post(config.get("webhook-link"), {
-            firstName: 'repeater',
-        })
-        .then(function (response) {
-            // console.log(response.body);
-        })
-        .catch(function (error) {
-            // console.log(error);
-        });
+                firstName: 'repeater',
+            })
+            .then(function (response) {
+                // console.log(response.body);
+            })
+            .catch(function (error) {
+                // console.log(error);
+            });
     }, 1000 * 60 * 5);
     bot.launch();
-// console.log(os.tmpdir());
-// fs.readFile(os.tmpdir()+"/example_db.json", "utf8", 
-//             function(error,data){
-//                 console.log("Асинхронное чтение файла");
-//                 if(error) throw error; // если возникла ошибка
-//                 console.log(data);  // выводим считанные данные
-// });
+    // console.log(os.tmpdir());
+    // fs.readFile(os.tmpdir()+"/example_db.json", "utf8", 
+    //             function(error,data){
+    //                 console.log("Асинхронное чтение файла");
+    //                 if(error) throw error; // если возникла ошибка
+    //                 console.log(data);  // выводим считанные данные
+    // });
     // bot.telegram.setWebhook(config.get("webhook-link"));
 }
