@@ -74,7 +74,7 @@ app.listen(port, () => {
             const db = client.connections[0].db;
             // console.log(db);
             // console.log(Object.keys(db));
-            bot.use(session());
+            // bot.use(session());
             // bot.use(MongoSession(db, {
             //     collectionName: 'sessions'
             // }));
@@ -90,9 +90,9 @@ app.listen(port, () => {
 })
 
 function startBot() {
-    // bot.use((new LocalSession({
-    //     database: os.tmpdir()+'/example_db.json'
-    // })).middleware())
+    bot.use((new LocalSession({
+        database: os.tmpdir() + '/example_db.json'
+    })).middleware())
     stage.command('ping', async (ctx, next) => {
         ctx.reply('Pong1')
     });
@@ -336,7 +336,7 @@ function startBot() {
                 // console.log(error);
             });
     }, 1000 * 60 * 5);
-    // bot.launch();
+    bot.launch();
     // console.log(os.tmpdir());
     // fs.readFile(os.tmpdir()+"/example_db.json", "utf8", 
     //             function(error,data){
