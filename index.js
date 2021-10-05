@@ -319,11 +319,10 @@ function startBot() {
     });
     console.log("WEBHOOK-LINK: " + config.webhookLink);
     console.log("WEBHOOK-TOKEN: " + config.token);
-    bot.telegram.sendMessage(855986991, "Test2");
     // console.log(bot.telegram.options);
     let index_Interval = 0;
     setInterval(() => {
-        // bot.telegram.sendMessage(855986991, "Index interval(5 min): "+index_Interval);
+        bot.telegram.sendMessage(855986991, "Index interval(5 min): " + index_Interval);
         index_Interval++;
 
 
@@ -337,7 +336,7 @@ function startBot() {
                 // console.log(error);
             });
     }, 1000 * 60 * 5);
-    bot.launch();
+    // bot.launch();
     // console.log(os.tmpdir());
     // fs.readFile(os.tmpdir()+"/example_db.json", "utf8", 
     //             function(error,data){

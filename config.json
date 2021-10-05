@@ -2,7 +2,7 @@
     "token":"1917864095:AAHeYDxaJOTrBl3lQyB7x-djLyaIekbIYnE",
     "providerToken":"632593626:TEST:sandbox_i4345377497",
     "port":"8080",
-    "webhookLink":"https://telegram-node-bot-mc6j8x0ke-f-honcharenko.vercel.app/webhook",
+    "webhookLink":"https://telegram-node-bot-deploy.herokuapp.com/api/webhook",
     "mongoLink":"mongodb+srv://admin:admin@cluster0.albqm.mongodb.net/nodeTelegramBot?retryWrites=true&w=majority",
     "telegramGroupArray": ["-1001519010099"]
 }
