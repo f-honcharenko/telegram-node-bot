@@ -16,16 +16,23 @@ function doneOrderScene() {
         comment: null
     };
     doneOrderScene.enter(async (ctx) => {
+        console.log("Подготовка формы для завершения заказа");
         return ctx.reply("Подготовка формы для завершения заказа. Отправьте файлы и/или коментарий, которые будут отправлены заказчику.", keyboards.doneOrder);
     })
 
+    doneOrderScene.leave(async (ctx) => {
+        console.log('done order exit');
+    return ctx.reply('вы вышли из сцены ответа!');
+    });
     doneOrderScene.on('document', async (ctx) => {
+        console.log("Document");
         responce.files.push(ctx.update.message.document.file_id);
         ctx.reply(`Документ [<i>${ctx.update.message.document.file_name}</i>] успешно добавлен!`, {
             parse_mode: 'HTML'
         });
     });
     doneOrderScene.on('message', async (ctx) => {
+        console.log("Message");
         switch (ctx.update.message.text) {
             case 'Предпросмотр ответа':
                 await ctx.reply('Ваш ответ будет выглядеть так:');

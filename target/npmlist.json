@@ -1,1 +1,0 @@
-{"version":"1.0.0","name":"telegram-node-bot","dependencies":{"body-parser":{"version":"1.19.0"},"config":{"version":"3.3.6"},"express":{"version":"4.17.1"},"liqpay-sdk":{"version":"3.2.0"},"liqpay":{"version":"0.0.1"},"mongoose":{"version":"5.13.3"},"nodemon":{"version":"2.0.12"},"telegraf":{"version":"4.3.0"}}}

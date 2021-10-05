@@ -74,19 +74,20 @@ function customsBrokerServicesScene() {
                 ctx.scene.enter('makeFormScene');
                 break;
             case 'Оформление экспорта':
-                ctx.session.formID = '_018_MakeExport"';
+                ctx.session.formID = '_018_MakeExport';
                 ctx.scene.enter('makeFormScene');
                 break;
             case 'Оформление евроблях':
-                ctx.session.formID = '_019_MakeEurobies"';
+                ctx.session.formID = '_019_MakeEurobies';
                 ctx.scene.enter('makeFormScene');
                 break;
             case 'Оформление посылок':
-                ctx.session.formID = '_020_MakePackage"';
+                ctx.session.formID = '_020_MakePackage';
                 ctx.scene.enter('makeFormScene');
                 break;
             case 'Получение сертификата ЕВРО-1':
-                ctx.session.formID = '_021_DiplomaEVRO1"';
+                console.log('[*сертификата ЕВРО-1*]');
+                ctx.session.formID = '_021_DiplomaEVRO1';
                 ctx.scene.enter('makeFormScene');
                 break;
             case 'Назад':

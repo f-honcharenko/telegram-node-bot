@@ -45,6 +45,7 @@ function adminScene() {
     })
 
     adminScene.on('message', async (ctx) => {
+        console.log(ctx.message.text);
         switch (ctx.message.text) {
             case 'Рейтинг бухгалтеров':
                 user.find({
@@ -68,6 +69,7 @@ function adminScene() {
                 });
                 break;
             case 'Общая статистика':
+                console.log('123');
                 let info = {
                     workers: 0,
                     users: 0,
@@ -96,7 +98,7 @@ function adminScene() {
                         return ctx.reply("Ошибка поиска заказов.");
                     }
                     if (resF) {
-                        console.log('RES', resF.length);
+                        // console.log('RES2', resF.length);
                         info.pendingWorkerOrders = resF.filter(order => order.status == 'pendingWorker').length;
                         info.pendingOrders = resF.filter(order => order.status == 'pending').length;
                         info.doneOrders = resF.filter(order => order.status == 'done').length;
@@ -108,7 +110,8 @@ function adminScene() {
                 });
                 break;
             case 'Назначить модератором':
-                return ctx.scene.enter('makeModerScene');
+                console.log('123');
+            return ctx.scene.enter('makeModerScene');
                 break;
             case 'Назначить исполнителем':
                 return ctx.scene.enter('makeWorkerScene');

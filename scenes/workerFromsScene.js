@@ -90,7 +90,7 @@ function workerFromsScene() {
             }
             if (resF) {
                 let inlineMessageRatingKeyboard = Markup.inlineKeyboard([Markup.button.callback("Отменить заказ")]);
-                ctx.reply(`<b>Услуга: </b>${resF.title}\n<b>Дата: </b>${new Date(resF.creationDate).toJSON().slice(0, 19).replace('T', ' ').replace('-', '.').replace('-', '.')}\n<b>Статус: </b>${resF.status == 'pendingWorker' ? 'Ожидает исполнителя\n\n' : resF.status == 'pending' ? 'Исполняется\n\n' : resF.status == 'canceled' ? 'Отменён\n\n' : resF.status == 'done' ? 'Готов\n\n' : 'Неизвестно\n\n'}`, {
+                ctx.reply(`<b>Услуга: </b>${resF.title}\n<b>Дата: </b>${new Date(resF.creationDate).toJSON().slice(0, 19).replace('T', ' ').replace('-', '.').replace('-', '.')}\n<b>Статус: </b>${resF.status == 'pendingWorker' ? 'Ожидает исполнителя' : resF.status == 'pending' ? 'Исполняется' : resF.status == 'canceled' ? 'Отменён' : resF.status == 'done' ? 'Готов\n\n' : 'Неизвестно'}\n<b>Заказчик: </b> <a href='tg://user?id=${resF.creatorTelegramID}'>Link</a>`, {
                     reply_markup: {
                         inline_keyboard: [
                             [{
@@ -126,7 +126,7 @@ function workerFromsScene() {
                 return ctx.reply("Ошибка поиска Заказа в БД.");
             }
             if (resF) {
-                ctx.reply(`<b>Услуга: </b>${resF.title}\n<b>Дата: </b>${new Date(resF.creationDate).toJSON().slice(0, 19).replace('T', ' ').replace('-', '.').replace('-', '.')}\n<b>Статус: </b>${resF.status == 'pendingWorker' ? 'Ожидает исполнителя\n\n' : resF.status == 'pending' ? 'Исполняется\n\n' : resF.status == 'canceled' ? 'Отменён' : resF.status == 'done' ? 'Готов' : 'Неизвестно'}\n<b>Коментарий исполнителя :</b> ${resF.comment==null?'<i>Отсутсвует</i>':resF.comment}`, {
+                ctx.reply(`<b>Услуга: </b>${resF.title}\n<b>Дата: </b>${new Date(resF.creationDate).toJSON().slice(0, 19).replace('T', ' ').replace('-', '.').replace('-', '.')}\n<b>Статус: </b>${resF.status == 'pendingWorker' ? 'Ожидает исполнителя\n\n' : resF.status == 'pending' ? 'Исполняется\n\n' : resF.status == 'canceled' ? 'Отменён' : resF.status == 'done' ? 'Готов' : 'Неизвестно'}\n<b>Заказчик: </b> <a href='tg://user?id=${resF.creatorTelegramID}'>Link</a>\n<b>Коментарий исполнителя :</b> ${resF.comment==null?'<i>Отсутсвует</i>':resF.comment}`, {
                     parse_mode: 'HTML'
                 });
                 resF.files.forEach(async (fileID) => {
@@ -147,7 +147,10 @@ function workerFromsScene() {
             }
             if (resF) {
                 ctx.session.order = resF;
-                return ctx.scene.enter('doneOrderScene');
+                console.log(ctx.session);
+                ctx.scene.enter('doneOrderScene');
+            }else{
+                console.log("resF not found");
             }
         });
 

@@ -78,9 +78,6 @@ function moderScene() {
                     canceledOrders: 0,
 
                 };
-                async function getData() {
-
-                };
                 //users
                 await user.find({}, async (errF, resF) => {
                     if (errF) {
@@ -110,6 +107,10 @@ function moderScene() {
                         parse_mode: 'HTML'
                     });
                 });
+                break;
+
+            case 'Назначить исполнителем':
+                return ctx.scene.enter('makeWorkerScene');
                 break;
             default:
                 return ctx.reply('Пожалуйста, используйте меню для навигации.');
