@@ -20,6 +20,7 @@ const LocalSession = require('telegraf-session-local')
 const MongoSession = require('telegraf-session-mongodb').session;
 //MODELS
 
+console.log("test");
 const sceneConnecter = require('./scenes/_sceneConnecter');
 const user = require('./models/user');
 const order = require('./models/order');
@@ -310,10 +311,11 @@ function startBot() {
     });
     console.log("WEBHOOK-LINK: " + config.get("webhook-link"));
     console.log("WEBHOOK-TOKEN: " + config.get("token"));
+        bot.telegram.sendMessage(855986991, "Test");
     // console.log(bot.telegram.options);
     let index_Interval = 0;
     setInterval(()=>{
-        bot.telegram.sendMessage(855986991, "Index interval(5 min): "+index_Interval);
+        // bot.telegram.sendMessage(855986991, "Index interval(5 min): "+index_Interval);
         index_Interval++;
         
 
@@ -327,7 +329,7 @@ function startBot() {
             // console.log(error);
         });
     }, 1000 * 60 * 5);
-    // bot.launch();
+    bot.launch();
 // console.log(os.tmpdir());
 // fs.readFile(os.tmpdir()+"/example_db.json", "utf8", 
 //             function(error,data){
