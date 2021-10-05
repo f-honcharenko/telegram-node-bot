@@ -52,9 +52,9 @@ app.get('/api/ping', (req, res) => {
 })
 
 app.get('/webhook', (req, res) => {
-    console.log('REQUEST');
-    console.log(req.body);
-    res.status(418);
+    res.status(200).json({
+        msg: 'webhook alright'
+    });
 })
 //EXPRESS SERVER
 app.listen(port, () => {
