@@ -93,6 +93,9 @@ function startBot() {
     // bot.use((new LocalSession({
     //     database: os.tmpdir()+'/example_db.json'
     // })).middleware())
+    stage.command('ping', async (ctx, next) => {
+        ctx.reply('Pong1')
+    });
     stage.command('mainmenu', async (ctx, next) => {
         let userID = ctx.message.from.id;
         await user.findOne({
