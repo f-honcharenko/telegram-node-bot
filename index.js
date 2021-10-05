@@ -91,7 +91,8 @@ app.listen(port, () => {
 
 function startBot() {
     bot.use((new LocalSession({
-        database: os.tmpdir() + '/example_db.json'
+        database: './example_db.json'
+        // database: os.tmpdir() + '/example_db.json'
     })).middleware())
     stage.command('ping', async (ctx, next) => {
         ctx.reply('Pong1')
