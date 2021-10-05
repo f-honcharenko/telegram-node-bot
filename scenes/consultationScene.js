@@ -7,8 +7,8 @@ const {
 const keyboards = require('../keyboards');
 const order = require('../models/order');
 const invoices = require('../invoices');
-const config = require('config');
-const groupList = config.get("telegram-group-array");
+const config = require('../config.json');
+const groupList = config.telegramGroupArray;
 
 function consultationScene() {
     const consultationScene = new Scenes.BaseScene('consultationScene');

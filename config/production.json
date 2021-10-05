@@ -1,8 +1,0 @@
-{
-    "token":"1917864095:AAHeYDxaJOTrBl3lQyB7x-djLyaIekbIYnE",
-    "provider-token":"632593626:TEST:sandbox_i4345377497",
-    "port":"8080",
-    "webhook-link":"https://deploy-node-bot.appspot.com/webhook",
-    "mongo-link":"mongodb+srv://admin:admin@cluster0.albqm.mongodb.net/nodeTelegramBot?retryWrites=true&w=majority",
-    "telegram-group-array": ["-1001519010099"]
-}

@@ -4,13 +4,13 @@ const {
     Router,
     Extra
 } = require('telegraf');
-const config = require('config');
+const config = require('../config.json');
 var LiqPay = require('../lib/liqpay');
 
 var liqpay = new LiqPay("sandbox_i4345377497", "sandbox_PiUftLMJwcbiYnHSDuCdZMJOqf22a030Vfb0FVQj");
 const keyboards = require('../keyboards');
 const order = require('../models/order');
-const groupList = config.get("telegram-group-array");
+const groupList = config.telegramGroupArray;
 
 function myFromsScene() {
     const myFromsScene = new Scenes.BaseScene('myFromsScene');

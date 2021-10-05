@@ -1,7 +1,7 @@
 const {
     Markup
 } = require('telegraf');
-const config = require('config');
+const config = require('./config.json');
 class invoices {
     static getTestInvoice = (id) => {
         return {

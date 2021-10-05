@@ -1,8 +1,8 @@
 const {
     Markup
 } = require('telegraf');
-const config = require('config');
-console.log(config.get('provider-token'));
+const config = require('./config.json');
+console.log(config.providerToken);
 
 // TYPES: [text, document]
 class formsData {

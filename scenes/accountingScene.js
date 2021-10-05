@@ -6,9 +6,9 @@ const {
 } = require('telegraf');
 const keyboards = require('../keyboards');
 const order = require('../models/order');
-const config = require('config');
+const config = require('../config.json');
 const invoices = require('../invoices');
-const groupList = config.get("telegram-group-array");
+const groupList = config.telegramGroupArray;
 
 function accountingScene() {
     const accountingScene = new Scenes.BaseScene('accountingScene');
