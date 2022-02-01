@@ -1,8 +1,9 @@
 {
     "token":"1917864095:AAHeYDxaJOTrBl3lQyB7x-djLyaIekbIYnE",
     "providerToken":"632593626:TEST:sandbox_i4345377497",
-    "port":"8080",
-    "webhookLink":"https://telegram-node-bot-deploy.herokuapp.com/api/webhook",
-    "mongoLink":"mongodb+srv://admin:admin@cluster0.albqm.mongodb.net/nodeTelegramBot?retryWrites=true&w=majority",
-    "telegramGroupArray": ["-1001519010099"]
+    "mongoLink":"mongodb+srv://admin:WvdMuAXhUDMKvBSA@cluster0.5j3gq.mongodb.net/telegramDataBase?retryWrites=true&w=majority",
+    "webhookLink":"https://telegram-node-bot-deploy.herokuapp.com/api/webhook",   
+    
+    "telegramGroupArray": ["-1001519010099"],
+    "port":"8080"
 }

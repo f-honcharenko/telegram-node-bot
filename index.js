@@ -67,6 +67,7 @@ app.listen(port, () => {
         useFindAndModify: false
     }, (err, client) => {
         if (err) {
+            console.log(err);
             return console.log('Error connect to DB');
         }
         if (client) {
